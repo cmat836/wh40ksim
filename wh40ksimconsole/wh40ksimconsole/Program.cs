@@ -10,6 +10,7 @@ namespace wh40ksimconsole
     {
         static void Main(string[] args)
         {
+            int beep = 5;
         }
     }
 }
