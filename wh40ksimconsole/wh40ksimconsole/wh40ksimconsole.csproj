@@ -44,9 +44,17 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Simulation\Dice.cs" />
+    <Compile Include="Simulation\Model.cs" />
+    <Compile Include="Simulation\Simulator.cs" />
+    <Compile Include="Simulation\Unit.cs" />
+    <Compile Include="Simulation\Weapon.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Data\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
