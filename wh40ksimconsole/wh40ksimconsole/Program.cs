@@ -12,7 +12,14 @@ namespace wh40ksimconsole
         static void Main(string[] args)
         {
             Simulator s = new Simulator();
-            s.Simulate();
+
+            int numberOfRuns = 100;
+            for (int i = 0; i < numberOfRuns; i++)
+            {
+                s.Simulate();
+            }
+
+            s.processResults();
 
             while (true) { }
         }

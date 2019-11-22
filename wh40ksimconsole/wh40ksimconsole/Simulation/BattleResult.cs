@@ -6,13 +6,7 @@ using System.Threading.Tasks;
 
 namespace wh40ksimconsole.Simulation
 {
-    class Unit
+    class BattleResult
     {
-        List<Model> models;
-
-        public Unit()
-        {
-            models = new List<Model>();
-        }
     }
 }

@@ -8,19 +8,46 @@ namespace wh40ksimconsole.Simulation
 {
     class Simulator
     {
-        Dice dice;
+        public Dice dice;
+        public static Simulator instance;
+
+        public SimulationState state;
+
+        public List<Battle> battleresults;
 
         public Simulator()
         {
             dice = new Dice();
+            instance = this;
+            state = SimulationState.WAITING;
         }
 
-        public void Simulate()
+        public void Simulate(Battle battle)
         {
-            for (int i = 0; i < 100; i++)
+            state = SimulationState.SIMULATING;
+            while (state == SimulationState.SIMULATING)
             {
-                Console.WriteLine(dice.rollD6());
+
             }
+
+        }
+
+        public void processResults()
+        {
+
+        }
+
+        public enum SimulationState
+        {
+            WAITING,
+            RESETING,
+            SIMULATING
+        }
+
+        public enum Player
+        {
+            PLAYER1,
+            PLAYER2
         }
     }
 }
