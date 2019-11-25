@@ -28,6 +28,11 @@ namespace wh40ksimconsole.Simulation
                     attackM.generateShots();
                     while (attackM.getShotsRemaining() > 0)
                     {
+                        Model target = unit.getFirstAliveModel();
+                        if (target == null)
+                        {
+                            break;
+                        }
                         attackM.attack(unit.getFirstAliveModel());
                     }
                 }

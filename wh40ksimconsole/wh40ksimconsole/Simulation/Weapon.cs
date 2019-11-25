@@ -57,6 +57,7 @@ namespace wh40ksimconsole.Simulation
                 return;
             }
             defender.wound(damage.get());
+            shotsRemaining--;
         }
 
         public enum WeaponType

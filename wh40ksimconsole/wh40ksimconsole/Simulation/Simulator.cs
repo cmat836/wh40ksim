@@ -25,6 +25,7 @@ namespace wh40ksimconsole.Simulation
 
         public void Simulate(Battle battle)
         {
+
             state = SimulationState.SIMULATING;
             while (state == SimulationState.SIMULATING)
             {

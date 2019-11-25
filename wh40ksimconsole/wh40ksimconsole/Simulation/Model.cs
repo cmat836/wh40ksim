@@ -44,7 +44,7 @@ namespace wh40ksimconsole.Simulation
         public void attack(Model target)
         {
             Weapon w = getFirstActiveWeapon();
-            if (w == null)
+            if (w == null || target == null)
             {
                 return;
             }
