@@ -25,5 +25,10 @@ namespace wh40ksimconsole.Simulation.Stats
         {
             return multiplied ? parent.strength.get() * modifier : parent.strength.get() + modifier;
         }
+
+        public void reset()
+        {
+        
+        }
     }
 }

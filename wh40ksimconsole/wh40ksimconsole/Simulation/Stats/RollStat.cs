@@ -21,5 +21,10 @@ namespace wh40ksimconsole.Simulation.Stats
         {
             return d6 ? Simulator.instance.dice.rollD6(numberofdice) : Simulator.instance.dice.rollD3();
         }
+
+        public void reset()
+        {
+           
+        }
     }
 }

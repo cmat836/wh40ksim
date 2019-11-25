@@ -11,5 +11,7 @@ namespace wh40ksimconsole.Simulation.Stats
     {
         // Returns the current value of the stat
         int get();
+
+        void reset();
     }
 }

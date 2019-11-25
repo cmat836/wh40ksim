@@ -20,6 +20,14 @@ namespace wh40ksimconsole.Simulation.Stats
             this.midrange = midrange;
         }
 
+        public WoundsStat(int value)
+        {
+            this.maxvalue = this.value = value;
+            this.upperrange = this.value;
+            this.midrange = this.value;
+
+        }
+
         public int get()
         {
             return value;
@@ -45,6 +53,11 @@ namespace wh40ksimconsole.Simulation.Stats
             {
                 this.value = 0;
             }
+        }
+
+        public void reset()
+        {
+            this.value = this.maxvalue;
         }
 
         public enum WoundRange

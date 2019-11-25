@@ -48,12 +48,15 @@
     <Compile Include="Simulation\BattleResult.cs" />
     <Compile Include="Simulation\Dice.cs" />
     <Compile Include="Simulation\Model.cs" />
+    <Compile Include="Simulation\Player.cs" />
+    <Compile Include="Simulation\SimulatorResult.cs" />
     <Compile Include="Simulation\Stats\FixedStat.cs" />
     <Compile Include="Simulation\Stats\ModelDepedentStat.cs" />
     <Compile Include="Simulation\Stats\RollStat.cs" />
     <Compile Include="Simulation\Simulator.cs" />
     <Compile Include="Simulation\Stats\Stat.cs" />
     <Compile Include="Simulation\Stats\WoundsStat.cs" />
+    <Compile Include="Simulation\TargetingMode.cs" />
     <Compile Include="Simulation\Unit.cs" />
     <Compile Include="Simulation\Stats\VariStat.cs" />
     <Compile Include="Simulation\Weapon.cs" />

@@ -41,5 +41,9 @@ namespace wh40ksimconsole.Simulation.Stats
             }
         }
 
+        public void reset()
+        {
+        
+        }
     }
 }

@@ -40,5 +40,83 @@ namespace wh40ksimconsole.Simulation
         {
             weapons.Add(weapon);
         }
+
+        public void attack(Model target)
+        {
+            Weapon w = getFirstActiveWeapon();
+            if (w == null)
+            {
+                return;
+            }
+            if (w.type == Weapon.WeaponType.MELEE)
+            {
+
+            } else
+            {
+                if (Simulator.instance.dice.makeCheck(ballisticSkill.get()))
+                {
+                    w.attack(this, target);
+                }
+            }
+        }
+
+        public Weapon getFirstActiveWeapon()
+        {
+            foreach (Weapon w in weapons)
+            {
+                if (w.getShotsRemaining() > 0)
+                {
+                    return w;
+                }
+            }
+            return null;
+        }
+
+        public void generateShots()
+        {
+            foreach (Weapon w in weapons)
+            {
+                w.generateShots();
+            }
+        }
+
+        public int getShotsRemaining()
+        {
+            int shotsremaining = 0;
+            foreach (Weapon w in weapons)
+            {
+                shotsremaining += w.getShotsRemaining();
+            }
+            return shotsremaining;
+        }
+
+        // Make the model take wounds
+        public void wound(int wound)
+        {
+            if (this.wounds is WoundsStat)
+            {
+                ((WoundsStat)this.wounds).removeWounds(wound);
+            }
+            if (wounds.get() <= 0)
+            {
+                die();
+            }
+        }
+
+        public bool isAlive()
+        {
+            return wounds.get() > 0;
+        }
+
+        // do anything that happens when the model dies
+        public void die()
+        {
+
+        }
+
+        public void reset()
+        {
+            wounds.reset();
+        }
     }
 }
