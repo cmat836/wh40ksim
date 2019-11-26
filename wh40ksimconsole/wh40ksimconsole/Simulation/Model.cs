@@ -7,7 +7,7 @@ using wh40ksimconsole.Simulation.Stats;
 
 namespace wh40ksimconsole.Simulation
 {
-    class Model
+    public class Model
     {
         public Stat weaponSkill;
         public Stat ballisticSkill;
@@ -19,7 +19,13 @@ namespace wh40ksimconsole.Simulation
         public Stat armourSave;
         public Stat invulnerableSave;
 
+        // Always use addWeapon to add weapons, as then it makes sure that the parent is correctly assigned
         protected List<Weapon> weapons;
+
+        public Model()
+        {
+            weapons = new List<Weapon>();
+        }
 
         public Model(Stat weaponSkill, Stat ballisticSkill, Stat strength, Stat toughness, Stat wounds, Stat attacks, Stat leadership, Stat armourSave, Stat invulnerableSave)
         {
@@ -35,9 +41,23 @@ namespace wh40ksimconsole.Simulation
             weapons = new List<Weapon>();
         }
 
+        public void assignStats(Stat weaponSkill, Stat ballisticSkill, Stat strength, Stat toughness, Stat wounds, Stat attacks, Stat leadership, Stat armourSave, Stat invulnerableSave)
+        {
+            this.weaponSkill = weaponSkill;
+            this.ballisticSkill = ballisticSkill;
+            this.strength = strength;
+            this.toughness = toughness;
+            this.wounds = wounds;
+            this.attacks = attacks;
+            this.leadership = leadership;
+            this.armourSave = armourSave;
+            this.invulnerableSave = invulnerableSave;
+        }
+
         // Adds a new weapon to the unit
         public void addWeapon(Weapon weapon)
         {
+            weapon.setParent(this);
             weapons.Add(weapon);
         }
 
@@ -112,6 +132,19 @@ namespace wh40ksimconsole.Simulation
         public void die()
         {
 
+        }
+
+        public Model copy()
+        {
+            Model m = new Model();
+            m.assignStats(weaponSkill.copy(m), ballisticSkill.copy(m), strength.copy(m), toughness.copy(m), wounds.copy(m), attacks.copy(m), leadership.copy(m), armourSave.copy(m), invulnerableSave.copy(m));           
+
+            foreach (Weapon w in weapons)
+            {
+                m.addWeapon(w.copy());
+            }
+
+            return m;
         }
 
         public void reset()

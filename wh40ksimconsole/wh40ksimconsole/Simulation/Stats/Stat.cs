@@ -13,5 +13,8 @@ namespace wh40ksimconsole.Simulation.Stats
         int get();
 
         void reset();
+
+        Stat copy();
+        Stat copy(Model newParent);
     }
 }

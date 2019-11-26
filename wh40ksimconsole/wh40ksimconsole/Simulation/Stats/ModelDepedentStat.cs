@@ -30,5 +30,21 @@ namespace wh40ksimconsole.Simulation.Stats
         {
         
         }
+
+        public void setParent(Model newParent)
+        {
+            parent = newParent;
+        }
+
+        public Stat copy()
+        {
+            return new ModelDependentStat(multiplied, modifier, parent);
+        }
+
+        public Stat copy(Model newParent)
+        {
+            return new ModelDependentStat(multiplied, modifier, newParent);
+
+        }
     }
 }

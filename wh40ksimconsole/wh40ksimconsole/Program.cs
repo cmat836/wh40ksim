@@ -23,10 +23,17 @@ namespace wh40ksimconsole
             spessmarine.addWeapon(boltgun);
             term.addWeapon(fleshborer);
 
+            Model term2 = term.copy();
+            Model term3 = term.copy();
+            Model term4 = term.copy();
+
             Unit spess = new Unit(TargetingMode.ORDER);
             spess.models.Add(spessmarine);
             Unit tyr = new Unit(TargetingMode.ORDER);
             tyr.models.Add(term);
+            tyr.models.Add(term2);
+            tyr.models.Add(term3);
+            tyr.models.Add(term4);
 
 
             int numberOfRuns = 10000;

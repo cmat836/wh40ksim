@@ -26,5 +26,15 @@ namespace wh40ksimconsole.Simulation.Stats
         {
             this.value = this.maxvalue;
         }
+
+        public Stat copy()
+        {
+            return new FixedStat(maxvalue);
+        }
+
+        public Stat copy(Model newParent)
+        {
+            return new FixedStat(maxvalue);
+        }
     }
 }

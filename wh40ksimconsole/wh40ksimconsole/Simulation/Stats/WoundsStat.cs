@@ -60,6 +60,15 @@ namespace wh40ksimconsole.Simulation.Stats
             this.value = this.maxvalue;
         }
 
+        public Stat copy()
+        {
+            return new WoundsStat(maxvalue, upperrange, midrange);
+        }
+
+        public Stat copy(Model newParent)
+        {
+            return new WoundsStat(maxvalue, upperrange, midrange);
+        }
         public enum WoundRange
         {
             UPPER,

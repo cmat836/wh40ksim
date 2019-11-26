@@ -7,7 +7,7 @@ using wh40ksimconsole.Simulation.Stats;
 
 namespace wh40ksimconsole.Simulation
 {
-    class Weapon
+    public class Weapon
     {
         public Stat range;
         public WeaponType type;
@@ -18,6 +18,8 @@ namespace wh40ksimconsole.Simulation
 
         int shotsRemaining;
 
+        Model parent;
+
         public Weapon(Stat range, WeaponType type, Stat strength, Stat AP, Stat damage, Stat shots)
         {
             this.range = range;
@@ -26,6 +28,11 @@ namespace wh40ksimconsole.Simulation
             this.AP = AP;
             this.damage = damage;
             this.shots = shots;
+        }
+
+        public void setParent(Model newParent)
+        {
+            parent = newParent;
         }
 
         public int getShotsRemaining()
@@ -69,6 +76,11 @@ namespace wh40ksimconsole.Simulation
             GRENADE,
             PISTOL,
             MACRO
+        }
+
+        public Weapon copy()
+        {
+            return new Weapon(range.copy(), type, strength.copy(), AP.copy(), damage.copy(), shots.copy());
         }
     }
 }

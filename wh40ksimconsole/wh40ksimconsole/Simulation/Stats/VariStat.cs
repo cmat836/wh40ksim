@@ -45,5 +45,21 @@ namespace wh40ksimconsole.Simulation.Stats
         {
         
         }
+
+        public void setParent(Model newParent)
+        {
+            parent = newParent;
+        }
+
+
+        public Stat copy()
+        {
+            return new VariStat(statLevelUpper, statLevelMid, statLevelLower, parent);
+        }
+
+        public Stat copy(Model newParent)
+        {
+            return new VariStat(statLevelUpper, statLevelMid, statLevelLower, newParent);
+        }
     }
 }

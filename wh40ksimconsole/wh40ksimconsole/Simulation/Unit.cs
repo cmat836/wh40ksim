@@ -26,6 +26,10 @@ namespace wh40ksimconsole.Simulation
                 foreach (Model attackM in models)
                 {
                     attackM.generateShots();
+                    if (!attackM.isAlive())
+                    {
+                        break;
+                    }
                     while (attackM.getShotsRemaining() > 0)
                     {
                         Model target = unit.getFirstAliveModel();

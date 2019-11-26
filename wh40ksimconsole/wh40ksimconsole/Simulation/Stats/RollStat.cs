@@ -26,5 +26,15 @@ namespace wh40ksimconsole.Simulation.Stats
         {
            
         }
+
+        public Stat copy()
+        {
+            return new RollStat(d6, numberofdice);
+        }
+
+        public Stat copy(Model newParent)
+        {
+            return new RollStat(d6, numberofdice);
+        }
     }
 }
