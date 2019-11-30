@@ -1,0 +1,67 @@
+{
+  "Name": "Termagaunt",
+  "WeaponSkill": {
+    "Type": "FixedStat",
+    "Value": 4
+  },
+  "BallisticSkill": {
+    "Type": "FixedStat",
+    "Value": 4
+  },
+  "Strength": {
+    "Type": "FixedStat",
+    "Value": 3
+  },
+  "Toughness": {
+    "Type": "FixedStat",
+    "Value": 3
+  },
+  "Wounds": {
+    "Type": "WoundStat",
+    "Value": 1,
+    "UpperRange": 1,
+    "MidRange": 1
+  },
+  "Attacks": {
+    "Type": "FixedStat",
+    "Value": 1
+  },
+  "Leadership": {
+    "Type": "FixedStat",
+    "Value": 5
+  },
+  "ArmourSave": {
+    "Type": "FixedStat",
+    "Value": 6
+  },
+  "InvulnerableSave": {
+    "Type": "FixedStat",
+    "Value": 7
+  },
+  "Weapons": [
+    {
+      "Name": "Fleshborer",
+      "Range": {
+        "Type": "FixedStat",
+        "Value": 12
+      },
+      "Type": 1,
+      "Strength": {
+        "Type": "FixedStat",
+        "Value": 4
+      },
+      "AP": {
+        "Type": "FixedStat",
+        "Value": 0
+      },
+      "Damage": {
+        "Type": "FixedStat",
+        "Value": 1
+      },
+      "Shots": {
+        "Type": "FixedStat",
+        "Value": 1
+      }
+    }
+  ]
+}

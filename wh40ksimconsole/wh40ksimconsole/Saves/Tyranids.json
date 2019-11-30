@@ -1,0 +1,13 @@
+{
+  
+  "Name": "Tyranids",
+  "Models": [
+    {
+      "Name": "Termagaunt",
+      "Location": "../../Saves/Termagaunt.json"
+    }
+  ],
+  "Weapons": [
+
+  ]
+}

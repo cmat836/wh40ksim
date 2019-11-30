@@ -26,33 +26,18 @@ namespace wh40ksimconsole
             spessmarine.addWeapon(boltgun);
             term.addWeapon(fleshborer);
 
-            DataReader.writeJObjectToFile("./Saves/SpaceMarine.json", spessmarine.serialize());
-            DataReader.writeJObjectToFile("./Saves/Termagaunt.json", term.serialize());
+            //DataReader.writeJObjectToFile("../../Saves/TacticalMarine.json", spessmarine.serialize());
+            //DataReader.writeJObjectToFile("../../Saves/Termagaunt.json", term.serialize());
 
-            /*
-            Model term2 = term.copy();
-            Model term3 = term.copy();
-            Model term4 = term.copy();
-
-            Unit spess = new Unit(TargetingMode.ORDER);
-            spess.models.Add(spessmarine);
-            Unit tyr = new Unit(TargetingMode.ORDER);
-            tyr.models.Add(term);
-            tyr.models.Add(term2);
-            tyr.models.Add(term3);
-            tyr.models.Add(term4);
-            */
+            ModelStore store = new ModelStore("../../Saves/Manifest.json");
+            store.load();
 
 
-
-            JObject marine = DataReader.readJObjectFromFile("./Saves/SpaceMarine.json");
-            JObject termagaunt = DataReader.readJObjectFromFile("./Saves/Termagaunt.json");
-
-            Model marine1 = new Model(marine);
-            Model term1 = new Model(termagaunt);
-            Model term2 = new Model(termagaunt);
-            Model term3 = new Model(termagaunt);
-            Model term4 = new Model(termagaunt);
+            Model marine1 = store.getModel("Tactical Marine");
+            Model term1 = store.getModel("Termagaunt");
+            Model term2 = store.getModel("Termagaunt");
+            Model term3 = store.getModel("Termagaunt");
+            Model term4 = store.getModel("Termagaunt");
 
             Unit spess = new Unit(TargetingMode.ORDER);
             spess.models.Add(marine1);
@@ -61,8 +46,6 @@ namespace wh40ksimconsole
             tyr.models.Add(term2);
             tyr.models.Add(term3);
             tyr.models.Add(term4);
-
-            //Console.WriteLine(DataReader.readJObjectFromFile("./Saves/SpaceMarine.json"));
 
             int numberOfRuns = 10000;
             for (int i = 0; i < numberOfRuns; i++)

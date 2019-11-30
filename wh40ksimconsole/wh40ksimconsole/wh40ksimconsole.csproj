@@ -70,9 +70,12 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Saves\Manifest.json" />
+    <None Include="Saves\SpaceMarines.json" />
+    <None Include="Saves\TacticalMarine.json" />
+    <None Include="Saves\Termagaunt.json" />
+    <None Include="Saves\Tyranids.json" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Saves\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

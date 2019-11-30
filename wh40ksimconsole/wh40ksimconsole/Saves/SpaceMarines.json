@@ -1,0 +1,12 @@
+{
+  "Name":  "Space Marines",
+  "Models": [
+    {
+      "Name": "Tactical Marine",
+      "Location":  "../../Saves/TacticalMarine.json"
+    }
+  ],
+  "Weapons": [
+
+  ]
+}
