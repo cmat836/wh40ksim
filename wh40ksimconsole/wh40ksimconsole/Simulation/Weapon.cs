@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using wh40ksimconsole.Simulation.Stats;
+using Newtonsoft.Json.Linq;
 
 namespace wh40ksimconsole.Simulation
 {
@@ -16,18 +17,33 @@ namespace wh40ksimconsole.Simulation
         public Stat damage;
         public Stat shots;
 
+        public String name;
+
         int shotsRemaining;
 
         Model parent;
 
-        public Weapon(Stat range, WeaponType type, Stat strength, Stat AP, Stat damage, Stat shots)
+        public Weapon(String name, Stat range, WeaponType type, Stat strength, Stat AP, Stat damage, Stat shots)
         {
+            this.name = name;
             this.range = range;
             this.type = type;
             this.strength = strength;
             this.AP = AP;
             this.damage = damage;
             this.shots = shots;
+        }
+
+        public Weapon(JObject obj, Model parent)
+        {
+            this.name = (String)obj["Name"];
+            this.range = StatSerializer.deSerialize((JObject)obj["Range"], parent);
+            this.type = (WeaponType)(int)obj["Type"];
+            this.strength = StatSerializer.deSerialize((JObject)obj["Strength"], parent);
+            this.AP = StatSerializer.deSerialize((JObject)obj["AP"], parent); ;
+            this.damage = StatSerializer.deSerialize((JObject)obj["Damage"], parent);
+            this.shots = StatSerializer.deSerialize((JObject)obj["Shots"], parent);
+            this.parent = parent;
         }
 
         public void setParent(Model newParent)
@@ -80,7 +96,21 @@ namespace wh40ksimconsole.Simulation
 
         public Weapon copy()
         {
-            return new Weapon(range.copy(), type, strength.copy(), AP.copy(), damage.copy(), shots.copy());
+            return new Weapon(name, range.copy(), type, strength.copy(), AP.copy(), damage.copy(), shots.copy());
+        }
+
+        public JObject serialize()
+        {
+            JObject obj = new JObject(
+                new JProperty("Name", name),
+                new JProperty("Range", range.serialize()),
+                new JProperty("Type", type),
+                new JProperty("Strength", strength.serialize()),
+                new JProperty("AP", AP.serialize()),
+                new JProperty("Damage", damage.serialize()),
+                new JProperty("Shots", shots.serialize())
+                );
+            return obj;
         }
     }
 }

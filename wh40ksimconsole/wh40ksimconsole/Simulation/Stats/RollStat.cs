@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace wh40ksimconsole.Simulation.Stats
 {
@@ -35,6 +36,15 @@ namespace wh40ksimconsole.Simulation.Stats
         public Stat copy(Model newParent)
         {
             return new RollStat(d6, numberofdice);
+        }
+
+        public JObject serialize()
+        {
+            JObject obj = new JObject(
+                new JProperty("Type", "RollStat"),
+                new JProperty("NumberOfDice", numberofdice),
+                new JProperty("D6", d6));
+            return obj;
         }
     }
 }

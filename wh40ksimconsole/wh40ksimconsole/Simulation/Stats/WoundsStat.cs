@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace wh40ksimconsole.Simulation.Stats
 {
@@ -69,6 +70,17 @@ namespace wh40ksimconsole.Simulation.Stats
         {
             return new WoundsStat(maxvalue, upperrange, midrange);
         }
+
+        public JObject serialize()
+        {
+            JObject obj = new JObject(
+                new JProperty("Type", "WoundStat"),
+                new JProperty("Value", value),
+                new JProperty("UpperRange", upperrange),
+                new JProperty("MidRange", midrange));
+            return obj;
+        }
+
         public enum WoundRange
         {
             UPPER,

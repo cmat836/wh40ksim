@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace wh40ksimconsole.Simulation.Stats
 {
@@ -60,6 +61,16 @@ namespace wh40ksimconsole.Simulation.Stats
         public Stat copy(Model newParent)
         {
             return new VariStat(statLevelUpper, statLevelMid, statLevelLower, newParent);
+        }
+
+        public JObject serialize()
+        {
+            JObject obj = new JObject(
+                new JProperty("Type", "VariStat"),
+                new JProperty("StatLevelUpper", statLevelUpper),
+                new JProperty("StatLevelMid", statLevelMid),
+                new JProperty("StatLevelLower", statLevelLower));
+            return obj;
         }
     }
 }

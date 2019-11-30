@@ -10,7 +10,7 @@ namespace wh40ksimconsole.Simulation
     {
         public List<Model> models;
 
-        TargetingMode targeting = TargetingMode.ORDER;
+        public TargetingMode targeting = TargetingMode.ORDER;
 
         public Unit(TargetingMode mode)
         {

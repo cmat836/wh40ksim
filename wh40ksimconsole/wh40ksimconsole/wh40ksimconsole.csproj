@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -42,6 +45,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\DataReader.cs" />
+    <Compile Include="Data\ModelStore.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Simulation\Battle.cs" />
@@ -55,6 +60,7 @@
     <Compile Include="Simulation\Stats\RollStat.cs" />
     <Compile Include="Simulation\Simulator.cs" />
     <Compile Include="Simulation\Stats\Stat.cs" />
+    <Compile Include="Simulation\Stats\StatSerializer.cs" />
     <Compile Include="Simulation\Stats\WoundsStat.cs" />
     <Compile Include="Simulation\TargetingMode.cs" />
     <Compile Include="Simulation\Unit.cs" />
@@ -63,9 +69,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Data\" />
+    <Folder Include="Saves\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

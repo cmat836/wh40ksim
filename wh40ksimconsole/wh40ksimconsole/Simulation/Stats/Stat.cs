@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,5 +17,7 @@ namespace wh40ksimconsole.Simulation.Stats
 
         Stat copy();
         Stat copy(Model newParent);
+
+        JObject serialize();
     }
 }

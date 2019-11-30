@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace wh40ksimconsole.Simulation.Stats
 {
@@ -10,6 +12,7 @@ namespace wh40ksimconsole.Simulation.Stats
     class FixedStat : Stat 
     {
         int maxvalue;
+
         int value;
 
         public FixedStat(int value)
@@ -35,6 +38,14 @@ namespace wh40ksimconsole.Simulation.Stats
         public Stat copy(Model newParent)
         {
             return new FixedStat(maxvalue);
+        }
+
+        public JObject serialize()
+        {
+            JObject obj = new JObject(
+                new JProperty("Type", "FixedStat"),
+                new JProperty("Value", value));
+            return obj;
         }
     }
 }
