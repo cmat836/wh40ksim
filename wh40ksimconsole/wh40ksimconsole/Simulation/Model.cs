@@ -34,7 +34,7 @@ namespace wh40ksimconsole.Simulation
             equippedWeapons = new List<Weapon>();
         }
 
-        public Model(String name, Stat weaponSkill, Stat ballisticSkill, Stat strength, Stat toughness, Stat wounds, Stat attacks, Stat leadership, Stat armourSave, Stat invulnerableSave)
+        public Model(String name, Stat weaponSkill, Stat ballisticSkill, Stat strength, Stat toughness, Stat wounds, Stat attacks, Stat leadership, Stat armourSave, Stat invulnerableSave, List<String> weaponLoadout, List<String> equipmentLoadout)
         {
             this.name = name;
             this.weaponSkill = weaponSkill;
@@ -46,6 +46,8 @@ namespace wh40ksimconsole.Simulation
             this.leadership = leadership;
             this.armourSave = armourSave;
             this.invulnerableSave = invulnerableSave;
+            this.weaponLoadout = weaponLoadout;
+            this.equipmentLoadout = equipmentLoadout;
             equippedWeapons = new List<Weapon>();
         }
 
@@ -62,15 +64,17 @@ namespace wh40ksimconsole.Simulation
             this.armourSave = StatSerializer.deSerialize((JObject)obj["ArmourSave"], this);
             this.invulnerableSave = StatSerializer.deSerialize((JObject)obj["InvulnerableSave"], this);
             equippedWeapons = new List<Weapon>();
+            weaponLoadout = new List<string>();
+            equipmentLoadout = new List<string>();
             JArray weaponArray = (JArray)obj["Weapons"];
             foreach (JToken w in weaponArray)
             {
-                JObject wobj = (JObject)w;
-                equippedWeapons.Add(new Weapon(wobj, this));
+                JValue wval = (JValue)w;
+                weaponLoadout.Add((String)wval);
             }
         }
 
-        public void assignStats(Stat weaponSkill, Stat ballisticSkill, Stat strength, Stat toughness, Stat wounds, Stat attacks, Stat leadership, Stat armourSave, Stat invulnerableSave)
+        public void assignStats(Stat weaponSkill, Stat ballisticSkill, Stat strength, Stat toughness, Stat wounds, Stat attacks, Stat leadership, Stat armourSave, Stat invulnerableSave, List<String> weaponLoadout, List<String> equipmentLoadout)
         {
             this.weaponSkill = weaponSkill;
             this.ballisticSkill = ballisticSkill;
@@ -81,6 +85,8 @@ namespace wh40ksimconsole.Simulation
             this.leadership = leadership;
             this.armourSave = armourSave;
             this.invulnerableSave = invulnerableSave;
+            this.weaponLoadout = weaponLoadout;
+            this.equipmentLoadout = equipmentLoadout;
         }
 
         // Adds a new weapon to the unit
@@ -166,7 +172,7 @@ namespace wh40ksimconsole.Simulation
         public Model copy()
         {
             Model m = new Model(name);
-            m.assignStats(weaponSkill.copy(m), ballisticSkill.copy(m), strength.copy(m), toughness.copy(m), wounds.copy(m), attacks.copy(m), leadership.copy(m), armourSave.copy(m), invulnerableSave.copy(m));           
+            m.assignStats(weaponSkill.copy(m), ballisticSkill.copy(m), strength.copy(m), toughness.copy(m), wounds.copy(m), attacks.copy(m), leadership.copy(m), armourSave.copy(m), invulnerableSave.copy(m), new List<string>(weaponLoadout), new List<string>(equipmentLoadout));           
 
             foreach (Weapon w in equippedWeapons)
             {
@@ -196,8 +202,8 @@ namespace wh40ksimconsole.Simulation
                 new JProperty("InvulnerableSave", invulnerableSave.serialize()),
                 new JProperty("Weapons",
                     new JArray(
-                        from w in equippedWeapons
-                        select new JObject(w.serialize())
+                        from w in weaponLoadout
+                        select new JValue(w)
                     ))
                 );
             return obj;

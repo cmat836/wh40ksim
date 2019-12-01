@@ -39,29 +39,6 @@
     "Value": 7
   },
   "Weapons": [
-    {
-      "Name": "Fleshborer",
-      "Range": {
-        "Type": "FixedStat",
-        "Value": 12
-      },
-      "Type": 1,
-      "Strength": {
-        "Type": "FixedStat",
-        "Value": 4
-      },
-      "AP": {
-        "Type": "FixedStat",
-        "Value": 0
-      },
-      "Damage": {
-        "Type": "FixedStat",
-        "Value": 1
-      },
-      "Shots": {
-        "Type": "FixedStat",
-        "Value": 1
-      }
-    }
+    "Fleshborer"
   ]
 }

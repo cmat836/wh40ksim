@@ -1,5 +1,5 @@
 {
-  "Name": "Tactical Marine",
+  "Name": "Terminator",
   "WeaponSkill": {
     "Type": "FixedStat",
     "Value": 3
@@ -18,27 +18,27 @@
   },
   "Wounds": {
     "Type": "WoundStat",
-    "Value": 1,
-    "UpperRange": 1,
-    "MidRange": 1
+    "Value": 2,
+    "UpperRange": 2,
+    "MidRange": 2
   },
   "Attacks": {
     "Type": "FixedStat",
-    "Value": 1
+    "Value": 2
   },
   "Leadership": {
     "Type": "FixedStat",
-    "Value": 7
+    "Value": 8
   },
   "ArmourSave": {
     "Type": "FixedStat",
-    "Value": 3
+    "Value": 2
   },
   "InvulnerableSave": {
     "Type": "FixedStat",
-    "Value": 7
+    "Value": 5
   },
   "Weapons": [
-    "Boltgun"
+    "Stormbolter"
   ]
 }

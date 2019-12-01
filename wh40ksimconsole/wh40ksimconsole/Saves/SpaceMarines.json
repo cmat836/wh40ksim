@@ -1,12 +1,23 @@
 {
-  "Name":  "Space Marines",
+  "Name": "Space Marines",
   "Models": [
     {
       "Name": "Tactical Marine",
-      "Location":  "../../Saves/TacticalMarine.json"
+      "Location": "../../Saves/TacticalMarine.json"
+    },
+    {
+      "Name": "Terminator",
+      "Location": "../../Saves/Terminator.json"
     }
   ],
   "Weapons": [
-
+    {
+      "Name": "Boltgun",
+      "Location": "../../Saves/Boltgun.json"
+    },
+    {
+      "Name": "Storm bolter",
+      "Location": "../../Saves/Stormbolter.json"
+    }
   ]
 }

@@ -1,5 +1,4 @@
 {
-  
   "Name": "Tyranids",
   "Models": [
     {
@@ -8,6 +7,9 @@
     }
   ],
   "Weapons": [
-
+    {
+      "Name": "Fleshborer",
+      "Location": "../../Saves/Fleshborer.json"
+    }
   ]
 }

@@ -1,0 +1,24 @@
+{
+  "Name": "Boltgun",
+  "Range": {
+    "Type": "FixedStat",
+    "Value": 24
+  },
+  "Type": 3,
+  "Strength": {
+    "Type": "FixedStat",
+    "Value": 4
+  },
+  "AP": {
+    "Type": "FixedStat",
+    "Value": 0
+  },
+  "Damage": {
+    "Type": "FixedStat",
+    "Value": 1
+  },
+  "Shots": {
+    "Type": "FixedStat",
+    "Value": 2
+  }
+}

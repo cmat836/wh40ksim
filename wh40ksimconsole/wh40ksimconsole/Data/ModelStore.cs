@@ -37,6 +37,31 @@ namespace wh40ksimconsole.Data
             return new Model(modelCache[name]);
         }
 
+        public Model getModel(String name, String[] weapons)
+        {
+            if (!loaded)
+            {
+                Console.WriteLine("ERROR: Modelstore not loaded");
+                return null;
+            }
+            Model m = new Model(modelCache[name]);
+            foreach (String s in weapons)
+            {
+                m.addWeapon(getWeapon(s, m));
+            }
+            return m;
+        }
+
+        public Weapon getWeapon(String name, Model parent)
+        {
+            if (!loaded)
+            {
+                Console.WriteLine("ERROR: Modelstore not loaded");
+                return null;
+            }
+            return new Weapon(weaponCache[name], parent);
+        }
+
 
         public void load()
         {
@@ -46,6 +71,7 @@ namespace wh40ksimconsole.Data
             armyManifest = (JArray)manifest["Armys"];
             armyCache = new Dictionary<string, JObject>();
             modelCache = new Dictionary<string, JObject>();
+            weaponCache = new Dictionary<string, JObject>();
             foreach (JToken army in armyManifest)
             {
                 JObject obj = (JObject)army;
@@ -62,13 +88,48 @@ namespace wh40ksimconsole.Data
                 {
                     modelCache.Add((String)model["Name"], DataReader.readJObjectFromFile((String)model["Location"]));
                 }
+
+                foreach (JObject weapon in weapons)
+                {
+                    weaponCache.Add((String)weapon["Name"], DataReader.readJObjectFromFile((String)weapon["Location"]));
+                }
             }
 
             Console.WriteLine("Finished loading");
             loaded = true;
+        }
 
-            //modelManifest = (JArray)manifest["Models"];
-            //weaponManifest = (JArray)manifest["Weapons"];
+        public void addModel(String armyName, String modelName, String fileLocation, Model model)
+        {
+            ((JArray)(armyCache[armyName]["Models"])).Add(new JObject(
+                new JProperty("Name", modelName),
+                new JProperty("Location", fileLocation)));
+            DataReader.writeJObjectToFile(fileLocation, model.serialize());
+        }
+
+        public void addWeapon(String armyName, String weaponName, String fileLocation, Weapon weapon)
+        {
+            ((JArray)(armyCache[armyName]["Weapons"])).Add(new JObject(
+                new JProperty("Name", weaponName),
+                new JProperty("Location", fileLocation)));
+            DataReader.writeJObjectToFile(fileLocation, weapon.serialize());
+        }
+
+        public void addArmy(String armyName, String fileLocation)
+        {
+
+        }
+
+        public void writeManifest()
+        {
+            foreach (JToken army in armyManifest)
+            {
+                JObject obj = (JObject)army;
+                String armyManifestLocation = (String)obj["ManifestLocation"];
+                JObject army_ = armyCache[(String)obj["Name"]];
+
+                DataReader.writeJObjectToFile(armyManifestLocation, army_);
+            }
         }
     }
 }
