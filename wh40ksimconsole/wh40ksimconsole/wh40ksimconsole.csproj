@@ -89,6 +89,8 @@
     <None Include="Saves\Terminator.json" />
     <None Include="Saves\Tyranids.json" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="The big fix list.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
