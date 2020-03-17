@@ -13,20 +13,35 @@ namespace wh40ksimconsole.Data
     {
         public static void writeJObjectToFile(String filename, JObject obj)
         {
-            StreamWriter writer = File.CreateText(filename);
-            JsonTextWriter write = new JsonTextWriter(writer);
-            write.Formatting = Formatting.Indented;
-            obj.WriteTo(write);
-            write.Close();
+            try
+            {
+                StreamWriter writer = File.CreateText(filename);
+                JsonTextWriter write = new JsonTextWriter(writer);
+                write.Formatting = Formatting.Indented;
+                obj.WriteTo(write);
+                write.Close();
+            } catch (DirectoryNotFoundException e)
+            {
+                Console.WriteLine("Error: Incorrect directory name given to DataReader");
+            }
+
         }
 
         public static JObject readJObjectFromFile(String filename)
         {
-            StreamReader reader = File.OpenText(filename);
-            JsonTextReader read = new JsonTextReader(reader);
-            JObject obj = (JObject)JObject.ReadFrom(read);
-            read.Close();
-            return obj;
+            try
+            {
+                StreamReader reader = File.OpenText(filename);
+                JsonTextReader read = new JsonTextReader(reader);
+                JObject obj = (JObject)JObject.ReadFrom(read);
+                read.Close();
+                return obj;
+            } catch (FileNotFoundException e)
+            {
+                Console.WriteLine("Error: Incorrect Filename given to DataReader");
+                return new JObject();
+            }
+
         }
     }
 }

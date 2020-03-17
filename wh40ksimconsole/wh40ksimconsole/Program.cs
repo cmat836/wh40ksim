@@ -8,14 +8,23 @@ using wh40ksimconsole.Simulation.Stats;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using wh40ksimconsole.Data;
+using System.Windows;
 
 namespace wh40ksimconsole
 {
     class Program
     {
-        static void Main(string[] args)
+        public static Simulator s;
+        public static SimulatorWindow mainWindow;
+        public static Application mainWindowApp;
+
+        [STAThread]
+        static void Main(string[] args) 
         {
-            Simulator s = new Simulator();
+            s = new Simulator();
+            mainWindow = new SimulatorWindow();
+            mainWindowApp = new Application();
+            mainWindowApp.Run(mainWindow);
 
             Weapon boltgun = new Weapon("Boltgun", new FixedStat(24), Weapon.WeaponType.RAPIDFIRE, new FixedStat(4), new FixedStat(0), new FixedStat(1), new FixedStat(2));
             Weapon fleshborer = new Weapon("Fleshborer", new FixedStat(12), Weapon.WeaponType.ASSAULT, new FixedStat(4), new FixedStat(0), new FixedStat(1), new FixedStat(1));
