@@ -1,16 +1,8 @@
 {
   "Armies": [
-    {
-      "Name": "Space Marines",
-      "Location": "../../Saves/SpaceMarines.json"
-    },
-    {
-      "Name": "Tyranids",
-      "Location": "../../Saves/Tyranids.json"
-    },
-    {
-      "Name": "Orks",
-      "Location": "../../Saves/Orks.json"
-    }
+    "Space Marines",
+    "Tyranids",
+    "Orks",
+    "Custodes"
   ]
 }

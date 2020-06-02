@@ -46,13 +46,19 @@ namespace wh40ksimconsole.Data
         Dictionary<String, JObject> weaponCache;
 
         /// <summary>
-        /// The folder where the manifest and all its files are stored
+        /// The name of the manifest file
         /// </summary>
-        String manifestFileLocation;
+        String manifestName;
+
+        /// <summary>
+        /// The path to the directory where the manifest file it, Important for generating the addresses for other files
+        /// </summary>
+        String manifestPath;
 
         public ModelStore(String manifestAddress)
         {
-            this.manifestFileLocation = manifestAddress;
+            manifestName = manifestAddress.Substring(manifestAddress.LastIndexOf("/") + 1);
+            manifestPath = manifestAddress.Remove(manifestAddress.LastIndexOf("/") + 1);
             loaded = false;
             incompleteLoad = false;
         }
@@ -131,7 +137,7 @@ namespace wh40ksimconsole.Data
         }
 
         /// <summary>
-        /// Generates a new weapon as specified by its definition in the modelstore, parented to the model passed
+        /// Generates a new Weapon as specified by its definition in the modelstore, parented to the model passed
         /// </summary>
         /// <param name="name">The name of the weapon to be generated</param>
         /// <param name="parent">The model that this weapon will be assigned to</param>
@@ -166,7 +172,19 @@ namespace wh40ksimconsole.Data
             return new Weapon(weaponTemplate, parent);
         }
 
-         
+        /// <summary>
+        /// Generates a file name for the name given, removes spaces, makes all lowercase, swaps colons for underscores and adds the file extension + the path to the manifest
+        /// Also adds the army name if given
+        /// </summary>
+        /// <param name="name">The name to be converted</param>
+        /// <param name="armyName">Optional (Army name to add)</param>
+        /// <returns></returns>
+        public String getFileName(String name, String armyName = "")
+        {
+            String convertedName = (name.Replace(":", "_").Replace(" ", "").ToLower()) + ".json";
+            String convertedArmyName = armyName.Replace(" ", "").ToLower();
+            return manifestPath + convertedArmyName + (armyName != "" ? "_" : "") + convertedName;
+        }
 
         /// <summary>
         /// Loads all of the data listed in the manifest into the caches
@@ -174,175 +192,162 @@ namespace wh40ksimconsole.Data
         /// <returns>Did the manifest load correctly</returns>
         public bool load()
         {
-            Logger.instance.log(LogType.INFO, "Loading Manifest");
-            JObject rawManifest = DataReader.readJObjectFromFile(manifestFileLocation);
-
-            if (rawManifest == null)
+            try
             {
-                Logger.instance.log(LogType.FATAL, "Something went wrong loading the manifest");
+                Logger.instance.log(LogType.INFO, "Loading Manifest");
+                JObject rawManifest = DataReader.readJObjectFromFile(manifestPath + manifestName);
+
+                if (rawManifest == null)
+                {
+                    Logger.instance.log(LogType.FATAL, "Something went wrong loading the manifest");
+                    return false;
+                }
+
+                // Take out just the ArrayList of armies from the manifest
+                manifest = (JArray)rawManifest["Armies"];
+
+                if (manifest == null || !manifest.HasValues)
+                {
+                    Logger.instance.log(LogType.FATAL, "Manifest has no armies listed");
+                    return false;
+                }
+
+                armyCache = new Dictionary<string, JObject>();
+                modelCache = new Dictionary<string, JObject>();
+                weaponCache = new Dictionary<string, JObject>();
+
+                List<JValue> badArmies = new List<JValue>();
+
+                // Build the armycache from the armies listed in the manifest, setting aside any that did not load correctly
+                foreach (JValue armyListing in manifest)
+                {
+                    // See if it will load
+                    JObject army = DataReader.readJObjectFromFile(getFileName((String)armyListing));
+                    if (army == null)
+                    {
+                        Logger.instance.log(LogType.ERROR, "Army failed to load, likely due to a bad location");
+                        incompleteLoad = true;
+                        badArmies.Add(armyListing);
+                        continue;
+                    }
+                    // And do a quick check to see if the army itself is proper
+                    if (!army.ContainsKey("Models") || !army.ContainsKey("Weapons"))
+                    {
+                        Logger.instance.log(LogType.ERROR, "Army " + armyListing["Name"] + " is malformed");
+                        incompleteLoad = true;
+                        badArmies.Add(armyListing);
+                        continue;
+                    }
+                    // Finally check for duplicates, we dont like those
+                    if (armyCache.ContainsKey((String)armyListing))
+                    {
+                        Logger.instance.log(LogType.ERROR, "Army " + armyListing + " already exists in the cache");
+                        incompleteLoad = true;
+                        badArmies.Add(armyListing);
+                        continue;
+                    }
+                    armyCache.Add((String)armyListing, army);
+                }
+
+                // Remove any that did not load correctly from the manifest
+                foreach (JValue badArmy in badArmies)
+                {
+                    manifest.Remove(badArmy);
+                }
+
+                // Load the data for each army, setting aside any that doesnt load correctly
+                foreach (KeyValuePair<String, JObject> kvp in armyCache)
+                {
+                    JObject army = kvp.Value;
+
+                    List<JValue> badModels = new List<JValue>();
+                    List<JValue> badWeapons = new List<JValue>();
+
+                    JArray models = new JArray();
+                    JArray weapons = new JArray();
+
+                    // Only load data if the army has it
+                    if (army["Models"].HasValues)
+                    {
+                        models = (JArray)army["Models"];
+                    }
+                    else
+                    {
+                        Logger.instance.log(LogType.WARNING, "Army " + kvp.Key + " has no models");
+                    }
+                    if (army["Weapons"].HasValues)
+                    {
+                        weapons = (JArray)army["Weapons"];
+                    }
+                    else
+                    {
+                        Logger.instance.log(LogType.WARNING, "Army " + kvp.Key + " has no weapons");
+                    }
+
+                    // Load Models into the cache (after checking they exist)
+                    foreach (JValue modelListing in models)
+                    {
+                        JObject model = DataReader.readJObjectFromFile(getFileName((String)modelListing, kvp.Key));
+                        if (model == null)
+                        {
+                            Logger.instance.log(LogType.ERROR, "Model listing in army " + kvp.Key + " failed to load, likely due to a bad location");
+                            incompleteLoad = true;
+                            badModels.Add(modelListing);
+                            continue;
+                        }
+                        // Also check for duplicates, we dont like those
+                        if (modelCache.ContainsKey(kvp.Key + ":" + (String)modelListing))
+                        {
+                            Logger.instance.log(LogType.ERROR, "Model " + kvp.Key + ":" + (String)modelListing + " already exists in the cache");
+                            incompleteLoad = true;
+                            badModels.Add(modelListing);
+                            continue;
+                        }
+                        modelCache.Add(kvp.Key + ":" + (String)modelListing, model);
+                    }
+
+                    // Load Weapons into the cache (after checking they exist)
+                    foreach (JValue weaponListing in weapons)
+                    {
+                        JObject weapon = DataReader.readJObjectFromFile(getFileName((String)weaponListing, kvp.Key));
+                        if (weapon == null)
+                        {
+                            Logger.instance.log(LogType.ERROR, "Weapon listing in army " + kvp.Key + " failed to load, likely due to a bad location");
+                            incompleteLoad = true;
+                            badWeapons.Add(weaponListing);
+                            continue;
+                        }
+                        // Also check for duplicates, we dont like those
+                        if (weaponCache.ContainsKey(kvp.Key + ":" + (String)weaponListing))
+                        {
+                            Logger.instance.log(LogType.ERROR, "Weapon " + kvp.Key + ":" + (String)weaponListing + " already exists in the cache");
+                            incompleteLoad = true;
+                            badWeapons.Add(weaponListing);
+                            continue;
+                        }
+                        weaponCache.Add(kvp.Key + ":" + (String)weaponListing, weapon);
+                    }
+
+                    // Remove the bad data from the army =
+                    foreach (JValue badModel in badModels)
+                    {
+                        ((JArray)army["Models"]).Remove(badModel);
+                    }
+
+                    foreach (JValue badWeapon in badWeapons)
+                    {
+                        ((JArray)army["Weapons"]).Remove(badWeapon);
+                    }
+                }
+
+                Logger.instance.log(LogType.INFO, "Finished loading manifest");
+                loaded = true;
+                return true;
+            } catch (Exception e)
+            {
+                Logger.instance.log(LogType.FATAL, "Something unexpected happened while loading the modelstore, probably due to the jsons being formatted wrong :" + e.Message);
                 return false;
-            }
-
-            // Take out just the ArrayList of armies from the manifest
-            manifest = (JArray)rawManifest["Armies"];
-
-            if (manifest == null || !manifest.HasValues)
-            {
-                Logger.instance.log(LogType.FATAL, "Manifest has no armies listed");
-                return false;
-            }
-
-            armyCache = new Dictionary<string, JObject>();
-            modelCache = new Dictionary<string, JObject>();
-            weaponCache = new Dictionary<string, JObject>();
-
-            List<JObject> badArmies = new List<JObject>();
-
-            // Build the armycache from the armies listed in the manifest, setting aside any that did not load correctly
-            foreach (JObject armyListing in manifest)
-            {
-                // Check whether or not the army listing has all the stuff we need
-                if (!armyListing.ContainsKey("Name") || !armyListing.ContainsKey("Location"))
-                {
-                    Logger.instance.log(LogType.ERROR, "Army listing in manifest is malformed");
-                    incompleteLoad = true;
-                    badArmies.Add(armyListing);
-                    continue;
-                }
-                // See if it will load
-                JObject army = DataReader.readJObjectFromFile((String)armyListing["Location"]);
-                if (army == null)
-                {
-                    Logger.instance.log(LogType.ERROR, "Army failed to load, likely due to a bad location");
-                    incompleteLoad = true;
-                    badArmies.Add(armyListing);
-                    continue;
-                }
-                // And do a quick check to see if the army itself is proper
-                if (!army.ContainsKey("Models") || !army.ContainsKey("Weapons"))
-                {
-                    Logger.instance.log(LogType.ERROR, "Army " + armyListing["Name"] + " is malformed");
-                    incompleteLoad = true;
-                    badArmies.Add(armyListing);
-                    continue;
-                }
-                // Finally check for duplicates, we dont like those
-                if (armyCache.ContainsKey((String)armyListing["Name"]))
-                {
-                    Logger.instance.log(LogType.ERROR, "Army " + armyListing["Name"] + " already exists in the cache");
-                    incompleteLoad = true;
-                    badArmies.Add(armyListing);
-                    continue;
-                }
-                armyCache.Add((String)armyListing["Name"], army);
-            }
-
-            // Remove any that did not load correctly from the manifest
-            foreach (JObject badArmy in badArmies)
-            {
-                manifest.Remove(badArmy);
-            }
-
-            // Load the data for each army, setting aside any that doesnt load correctly
-            foreach (KeyValuePair<String, JObject> kvp in armyCache)
-            {
-                JObject army = kvp.Value;
-
-                List<JObject> badModels = new List<JObject>();
-                List<JObject> badWeapons = new List<JObject>();
-
-                JArray models = new JArray();
-                JArray weapons = new JArray();
-
-                // Only load data if the army has it
-                if (army["Models"].HasValues)
-                {
-                    models = (JArray)army["Models"];
-                } else
-                {
-                    Logger.instance.log(LogType.WARNING, "Army " + army["Name"] + " has no models");
-                }
-                if (army["Weapons"].HasValues)
-                {
-                    weapons = (JArray)army["Weapons"];
-                }
-                else
-                {
-                    Logger.instance.log(LogType.WARNING, "Army " + army["Name"] + " has no weapons");
-                }
-
-                // Load Models into the cache (after checking they exist)
-                foreach (JObject modelListing in models)
-                {
-                    if (!modelListing.ContainsKey("Name") || !modelListing.ContainsKey("Location"))
-                    {
-                        Logger.instance.log(LogType.ERROR, "Model listing in army " + army["Name"] + " is malformed");
-                        incompleteLoad = true;
-                        badModels.Add(modelListing);
-                        continue;
-                    }
-                    JObject model = DataReader.readJObjectFromFile((String)modelListing["Location"]);
-                    if (model == null)
-                    {
-                        Logger.instance.log(LogType.ERROR, "Model listing in army " + army["Name"] + " failed to load, likely due to a bad location");
-                        incompleteLoad = true;
-                        badModels.Add(modelListing);
-                        continue;
-                    }
-                    // Also check for duplicates, we dont like those
-                    if (modelCache.ContainsKey((String)army["Name"] + ":" + (String)modelListing["Name"]))
-                    {
-                        Logger.instance.log(LogType.ERROR, "Model " + (String)army["Name"] + ":" + (String)modelListing["Name"] + " already exists in the cache");
-                        incompleteLoad = true;
-                        badModels.Add(modelListing);
-                        continue;
-                    }
-                    modelCache.Add((String)army["Name"] + ":" + (String)modelListing["Name"], model);
-                }
-                
-                // Load Weapons into the cache (after checking they exist)
-                foreach (JObject weaponListing in weapons)
-                {
-                    if (!weaponListing.ContainsKey("Name") || !weaponListing.ContainsKey("Location"))
-                    {
-                        Logger.instance.log(LogType.ERROR, "Weapon listing in army " + army["Name"] + " is malformed");
-                        incompleteLoad = true;
-                        badWeapons.Add(weaponListing);
-                        continue;
-                    }
-                    JObject weapon = DataReader.readJObjectFromFile((String)weaponListing["Location"]);
-                    if (weapon == null)
-                    {
-                        Logger.instance.log(LogType.ERROR, "Weapon listing in army " + army["Name"] + " failed to load, likely due to a bad location");
-                        incompleteLoad = true;
-                        badWeapons.Add(weaponListing);
-                        continue;
-                    }
-                    // Also check for duplicates, we dont like those
-                    if (weaponCache.ContainsKey((String)army["Name"] + ":" + (String)weaponListing["Name"]))
-                    {
-                        Logger.instance.log(LogType.ERROR, "Weapon " + (String)army["Name"] + ":" + (String)weaponListing["Name"] + " already exists in the cache");
-                        incompleteLoad = true;
-                        badWeapons.Add(weaponListing);
-                        continue;
-                    }
-                    weaponCache.Add((String)army["Name"] + ":" + (String)weaponListing["Name"], weapon);
-                }
-
-                // Remove the bad data from the army =
-                foreach (JObject badModel in badModels)
-                {
-                    ((JArray)army["Models"]).Remove(badModel);
-                }
-
-                foreach (JObject badWeapon in badWeapons) {
-                    ((JArray)army["Weapons"]).Remove(badWeapon);
-                }
-            }
-
-            Logger.instance.log(LogType.INFO, "Finished loading manifest");
-            loaded = true;
-            return true;
+            }        
         }
 
         /// <summary>
@@ -352,7 +357,7 @@ namespace wh40ksimconsole.Data
         /// <param name="modelName">The name of the model</param>
         /// <param name="fileLocation">Where the models data is to be saved</param>
         /// <param name="model">The model to create a listing for</param>
-        public void addModel(String armyName, String modelName, String fileLocation, Model model)
+        public void addModel(String armyName, String modelName, Model model)
         {
             if (!loaded)
             {
@@ -372,14 +377,12 @@ namespace wh40ksimconsole.Data
                 Logger.instance.log(LogType.ERROR, "Model " + fullName + " already exists");
                 return;
             }
-            if (!DataReader.writeJObjectToFile(fileLocation, model.serialize()))
+            if (!DataReader.writeJObjectToFile(getFileName(modelName, armyName), model.serialize()))
             {
                 Logger.instance.log(LogType.ERROR, "Model " + modelName + " failed to save");
                 return;
             }
-            ((JArray)(armyCache[armyName]["Models"])).Add(new JObject(
-                new JProperty("Name", modelName),
-                new JProperty("Location", fileLocation)));
+            ((JArray)(armyCache[armyName]["Models"])).Add(new JValue(modelName));
             modelCache.Add(fullName, model.serialize());
         }
 
@@ -390,7 +393,7 @@ namespace wh40ksimconsole.Data
         /// <param name="weaponName">Name of the weapon</param>
         /// <param name="fileLocation">Where the weapons data is to be saved</param>
         /// <param name="weapon">The weapon to create a listing for</param>
-        public void addWeapon(String armyName, String weaponName, String fileLocation, Weapon weapon)
+        public void addWeapon(String armyName, String weaponName, Weapon weapon)
         {
             if (!loaded)
             {
@@ -409,14 +412,12 @@ namespace wh40ksimconsole.Data
                 Logger.instance.log(LogType.ERROR, "Weapon " + fullName + " already exists");
                 return;
             }
-            if (!DataReader.writeJObjectToFile(fileLocation, weapon.serialize()))
+            if (!DataReader.writeJObjectToFile(getFileName(weaponName, armyName), weapon.serialize()))
             {
                 Logger.instance.log(LogType.ERROR, "Weapon " + weaponName + " failed to save");
                 return;
             }
-            ((JArray)(armyCache[armyName]["Weapons"])).Add(new JObject(
-                new JProperty("Name", weaponName),
-                new JProperty("Location", fileLocation)));
+            ((JArray)(armyCache[armyName]["Weapons"])).Add(new JValue(weaponName));
             weaponCache.Add(fullName, weapon.serialize());
         }
         /// <summary>
@@ -424,7 +425,7 @@ namespace wh40ksimconsole.Data
         /// </summary>
         /// <param name="armyName">The name of the army</param>
         /// <param name="fileLocation">Where it is going to saved</param>
-        public void addArmy(String armyName, String fileLocation)
+        public void addArmy(String armyName)
         {
             if (!loaded)
             {
@@ -440,16 +441,13 @@ namespace wh40ksimconsole.Data
                 new JProperty("Name", armyName),
                 new JProperty("Models", new JArray()),
                 new JProperty("Weapons", new JArray()));
-            if (!DataReader.writeJObjectToFile(fileLocation, army))
+            if (!DataReader.writeJObjectToFile(getFileName(armyName), army))
             {
                 Logger.instance.log(LogType.ERROR, "Army " + armyName + " failed to save");
                 return;
             }
             armyCache.Add(armyName, army);
-            manifest.Add((JToken)(new JObject(
-                new JProperty("Name", armyName), 
-                new JProperty("Location", fileLocation))));
-            
+            manifest.Add((new JValue(armyName)));           
         }
 
         /// <summary>
@@ -473,15 +471,12 @@ namespace wh40ksimconsole.Data
                 Logger.instance.log(LogType.INFO, "Saving over incorrect manifest files");           
             }
             JObject rebuiltManifest = new JObject(new JProperty("Armies", manifest));
-            DataReader.writeJObjectToFile(manifestFileLocation, rebuiltManifest);
+            DataReader.writeJObjectToFile(manifestPath + manifestName, rebuiltManifest);
             
             foreach (JToken army in manifest)
             {
-                JObject obj = (JObject)army;
-                String armyLocation = (String)obj["Location"];
-                JObject army_ = armyCache[(String)obj["Name"]];
-
-                DataReader.writeJObjectToFile(armyLocation, army_);
+                JObject army_ = armyCache[(String)army];
+                DataReader.writeJObjectToFile(getFileName((String)army), army_);
             }
             
         }

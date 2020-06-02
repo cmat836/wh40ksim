@@ -87,16 +87,20 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Saves\Boltgun.json" />
-    <None Include="Saves\Fleshborer.json" />
+    <None Include="Saves\custodes.json" />
+    <None Include="Saves\spacemarines_boltgun.json" />
+    <None Include="Saves\spacemarines_devastator.json" />
+    <None Include="Saves\spacemarines_heavybolter.json" />
+    <None Include="Saves\tyranids_devourer.json" />
+    <None Include="Saves\tyranids_fleshborer.json" />
     <None Include="Saves\Manifest.json" />
-    <None Include="Saves\Orks.json" />
-    <None Include="Saves\SpaceMarines.json" />
-    <None Include="Saves\Stormbolter.json" />
-    <None Include="Saves\TacticalMarine.json" />
-    <None Include="Saves\Termagaunt.json" />
-    <None Include="Saves\Terminator.json" />
-    <None Include="Saves\Tyranids.json" />
+    <None Include="Saves\orks.json" />
+    <None Include="Saves\spacemarines.json" />
+    <None Include="Saves\spacemarines_stormbolter.json" />
+    <None Include="Saves\spacemarines_tacticalmarine.json" />
+    <None Include="Saves\tyranids_termagaunt.json" />
+    <None Include="Saves\spacemarines_terminator.json" />
+    <None Include="Saves\tyranids.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="The big fix list.txt" />

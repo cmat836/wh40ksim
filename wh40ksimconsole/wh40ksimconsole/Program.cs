@@ -39,14 +39,16 @@ namespace wh40ksimconsole
             term.addWeapon(fleshborer);
 
             ModelStore store = new ModelStore("../../Saves/Manifest.json");
+
             if (store.load())
             {
                 Weapon stormbolter = new Weapon("Storm bolter", new FixedStat(24), Weapon.WeaponType.RAPIDFIRE, new FixedStat(4), new FixedStat(0), new FixedStat(1), new FixedStat(2));
 
-                //Model terminator = new Model("Terminator", new FixedStat(3), new FixedStat(3), new FixedStat(4), new FixedStat(4), new WoundsStat(2), new FixedStat(2), new FixedStat(8), new FixedStat(2), new FixedStat(5), new List<string>() { "Stormbolter" }, new List<string>());
+                Model terminator = new Model("Terminator", new FixedStat(3), new FixedStat(3), new FixedStat(4), new FixedStat(4), new WoundsStat(2), new FixedStat(2), new FixedStat(8), new FixedStat(2), new FixedStat(5), new List<string>() { "Stormbolter" }, new List<string>());
 
-                store.addWeapon("Space Marines", "Storm bolter", "../../Saves/Stormbolter.json", stormbolter);
-                //store.addModel("Space Marines", "Terminator", "../../Saves/Terminator.json", terminator);           
+                store.addWeapon("Tyranids", "Devourer", fleshborer);
+                store.addModel("Space Marines", "Devastator", terminator);
+                store.addArmy("Custodes");
 
                 Model marine1 = store.getModel("Space Marines:Tactical Marine", new String[] { "Space Marines:Boltgun" });
                 Model term1 = store.getModel("Tyranids:Termagaunt", new String[] { "Tyranids:Fleshborer" });

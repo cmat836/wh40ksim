@@ -1,3 +1,1 @@
 ﻿Utilize exceptions during model loading (DataReader, Modelstore)
-
-Change the modelstore to generate file names from the character names, so i dont have to store them and they cant duplicate

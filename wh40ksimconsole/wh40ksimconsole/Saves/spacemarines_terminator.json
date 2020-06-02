@@ -1,0 +1,44 @@
+{
+  "Name": "Terminator",
+  "WeaponSkill": {
+    "Type": "FixedStat",
+    "Value": 3
+  },
+  "BallisticSkill": {
+    "Type": "FixedStat",
+    "Value": 3
+  },
+  "Strength": {
+    "Type": "FixedStat",
+    "Value": 4
+  },
+  "Toughness": {
+    "Type": "FixedStat",
+    "Value": 4
+  },
+  "Wounds": {
+    "Type": "WoundStat",
+    "Value": 2,
+    "UpperRange": 2,
+    "MidRange": 2
+  },
+  "Attacks": {
+    "Type": "FixedStat",
+    "Value": 2
+  },
+  "Leadership": {
+    "Type": "FixedStat",
+    "Value": 8
+  },
+  "ArmourSave": {
+    "Type": "FixedStat",
+    "Value": 2
+  },
+  "InvulnerableSave": {
+    "Type": "FixedStat",
+    "Value": 5
+  },
+  "Weapons": [
+    "Stormbolter"
+  ]
+}
