@@ -72,7 +72,6 @@
     <Compile Include="Simulation\Stats\IStat.cs" />
     <Compile Include="Simulation\Stats\StatSerializer.cs" />
     <Compile Include="Simulation\Stats\WoundsStat.cs" />
-    <Compile Include="Simulation\TargetingMode.cs" />
     <Compile Include="Simulation\Unit.cs" />
     <Compile Include="Simulation\Stats\VariStat.cs" />
     <Compile Include="Simulation\Weapon.cs" />

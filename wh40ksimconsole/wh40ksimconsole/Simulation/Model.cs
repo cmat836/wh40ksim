@@ -8,32 +8,92 @@ using Newtonsoft.Json.Linq;
 
 namespace wh40ksimconsole.Simulation
 {
+    /// <summary>
+    /// A single Model with stats and weapons
+    /// </summary>
     public class Model
     {
+        /// <summary>
+        /// The Model's weapons skill
+        /// </summary>
         public IStat weaponSkill;
+        /// <summary>
+        /// The Model's ballistics skill
+        /// </summary>
         public IStat ballisticSkill;
+        /// <summary>
+        /// The Model's strength
+        /// </summary>
         public IStat strength;
+        /// <summary>
+        /// The Model's toughness
+        /// </summary>
         public IStat toughness;
+        /// <summary>
+        /// The Model's wounds
+        /// </summary>
         public IStat wounds;
+        /// <summary>
+        /// The Model's attacks
+        /// </summary>
         public IStat attacks;
+        /// <summary>
+        /// The Model's leadership score
+        /// </summary>
         public IStat leadership;
+        /// <summary>
+        /// The Model's armour save
+        /// </summary>
         public IStat armourSave;
+        /// <summary>
+        /// The Model's invulnerable save
+        /// </summary>
         public IStat invulnerableSave;
 
+        /// <summary>
+        /// The name of the Model
+        /// </summary>
         public String name;
 
-        // Always use addWeapon to add weapons, as then it makes sure that the parent is correctly assigned
+        /// <summary>
+        /// A list of all the equipped weapons, please never add to this manually
+        /// </summary>
         List<Weapon> equippedWeapons;
 
+        /// <summary>
+        /// The weapons that are available to this Model
+        /// </summary>
         List<String> weaponLoadout;
+        /// <summary>
+        /// The Equipment that is available to this Model
+        /// </summary>
         List<String> equipmentLoadout;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="name">The name of the Model</param>
         public Model(String name)
         {
             this.name = name;
             equippedWeapons = new List<Weapon>();
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="name">The name of the Model</param>
+        /// <param name="weaponSkill">The Model's weapons skill</param>
+        /// <param name="ballisticSkill">The Model's ballistics skill</param>
+        /// <param name="strength">The Model's strength</param>
+        /// <param name="toughness">The Model's toughness</param>
+        /// <param name="wounds">The Model's wounds</param>
+        /// <param name="attacks">The Model's attacks</param>
+        /// <param name="leadership">The Model's leadership score</param>
+        /// <param name="armourSave">The Model's armour save</param>
+        /// <param name="invulnerableSave">The Model's invulnerable save</param>
+        /// <param name="weaponLoadout">The weapons that are available to this Model</param>
+        /// <param name="equipmentLoadout">The Equipment that is available to this Model</param>
         public Model(String name, IStat weaponSkill, IStat ballisticSkill, IStat strength, IStat toughness, IStat wounds, IStat attacks, IStat leadership, IStat armourSave, IStat invulnerableSave, List<String> weaponLoadout, List<String> equipmentLoadout)
         {
             this.name = name;
@@ -51,6 +111,10 @@ namespace wh40ksimconsole.Simulation
             equippedWeapons = new List<Weapon>();
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="obj">JObject representing a Model</param>
         public Model(JObject obj)
         {
             this.name = (String)obj["Name"];
@@ -74,6 +138,20 @@ namespace wh40ksimconsole.Simulation
             }
         }
 
+        /// <summary>
+        /// A Shorthand method to assign stats to a Model
+        /// </summary>
+        /// <param name="weaponSkill">The Model's weapons skill</param>
+        /// <param name="ballisticSkill">The Model's ballistics skill</param>
+        /// <param name="strength">The Model's strength</param>
+        /// <param name="toughness">The Model's toughness</param>
+        /// <param name="wounds">The Model's wounds</param>
+        /// <param name="attacks">The Model's attacks</param>
+        /// <param name="leadership">The Model's leadership score</param>
+        /// <param name="armourSave">The Model's armour save</param>
+        /// <param name="invulnerableSave">The Model's invulnerable save</param>
+        /// <param name="weaponLoadout">The weapons that are available to this Model</param>
+        /// <param name="equipmentLoadout">The Equipment that is available to this Model</param>
         public void assignStats(IStat weaponSkill, IStat ballisticSkill, IStat strength, IStat toughness, IStat wounds, IStat attacks, IStat leadership, IStat armourSave, IStat invulnerableSave, List<String> weaponLoadout, List<String> equipmentLoadout)
         {
             this.weaponSkill = weaponSkill;
@@ -89,13 +167,20 @@ namespace wh40ksimconsole.Simulation
             this.equipmentLoadout = equipmentLoadout;
         }
 
-        // Adds a new weapon to the unit
+        /// <summary>
+        /// Adds a Weapon to the Model, setting this as its parent
+        /// </summary>
+        /// <param name="weapon">The Weapon to add</param>
         public void addWeapon(Weapon weapon)
         {
             weapon.setParent(this);
             equippedWeapons.Add(weapon);
         }
 
+        /// <summary>
+        /// Makes a single attack against the target Model
+        /// </summary>
+        /// <param name="target">Target Model</param>
         public void attack(Model target)
         {
             Weapon w = getFirstActiveWeapon();
@@ -115,6 +200,10 @@ namespace wh40ksimconsole.Simulation
             }
         }
 
+        /// <summary>
+        /// Returns the first weapon that has shots remaining
+        /// </summary>
+        /// <returns></returns>
         public Weapon getFirstActiveWeapon()
         {
             foreach (Weapon w in equippedWeapons)
@@ -127,6 +216,9 @@ namespace wh40ksimconsole.Simulation
             return null;
         }
 
+        /// <summary>
+        /// Reload the Model's Weapons, should be called at the start of each turn
+        /// </summary>
         public void generateShots()
         {
             foreach (Weapon w in equippedWeapons)
@@ -135,6 +227,10 @@ namespace wh40ksimconsole.Simulation
             }
         }
 
+        /// <summary>
+        /// How many shots does the Model have left this turn
+        /// </summary>
+        /// <returns></returns>
         public int getShotsRemaining()
         {
             int shotsremaining = 0;
@@ -145,7 +241,10 @@ namespace wh40ksimconsole.Simulation
             return shotsremaining;
         }
 
-        // Make the model take wounds
+        /// <summary>
+        /// Wound the model, handles what occurs if the model dies
+        /// </summary>
+        /// <param name="wound">How many wounds to remove</param>
         public void wound(int wound)
         {
             if (this.wounds is WoundsStat)
@@ -158,17 +257,30 @@ namespace wh40ksimconsole.Simulation
             }
         }
 
+        /// <summary>
+        /// Is the Model alive
+        /// </summary>
+        /// <returns></returns>
         public bool isAlive()
         {
             return wounds.get() > 0;
         }
 
-        // do anything that happens when the model dies
+        /// <summary>
+        /// Kill the model, this also handles anything else that may occur when the Model dies
+        /// </summary>
         public void die()
         {
-
+            if (this.wounds is WoundsStat)
+            {
+                ((WoundsStat)this.wounds).removeWounds(((WoundsStat)this.wounds).get());
+            }
         }
 
+        /// <summary>
+        /// Returns a new by value copy of this Model, with new copies of its weapons
+        /// </summary>
+        /// <returns></returns>
         public Model copy()
         {
             Model m = new Model(name);
@@ -182,11 +294,18 @@ namespace wh40ksimconsole.Simulation
             return m;
         }
 
+        /// <summary>
+        /// Resets the model
+        /// </summary>
         public void reset()
         {
             wounds.reset();
         }
 
+        /// <summary>
+        /// Construct a JObject copy of this model for file storage
+        /// </summary>
+        /// <returns></returns>
         public JObject serialize()
         {
             JObject obj = new JObject(

@@ -5,3 +5,17 @@ Battle
 
 Simulator 
 	Check all phases are taken care of
+
+Unit
+	Implement multiple targeting modes
+	Implement different attack methods for different phases
+
+Model
+	Implement different attack methods for different phases
+	Add code in model preventing attacking if the Model is dead
+
+Equipment
+
+Special Rules
+
+Psychic Powers
