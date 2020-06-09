@@ -55,6 +55,10 @@ namespace wh40ksimconsole.Data
         /// </summary>
         String manifestPath;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="manifestAddress">The full file path to the manifest (can use relative pathing)</param>
         public ModelStore(String manifestAddress)
         {
             manifestName = manifestAddress.Substring(manifestAddress.LastIndexOf("/") + 1);
@@ -99,7 +103,7 @@ namespace wh40ksimconsole.Data
         /// <param name="name">The name of the model to be generated</param>
         /// <param name="weapons">The name(s) of the weapons to be generated for this model</param>
         /// <returns></returns>
-        public Model getModel(String name, String[] weapons)
+        public Model getModel(String name, params String[] weapons)
         {
             if (!loaded)
             {
@@ -123,15 +127,20 @@ namespace wh40ksimconsole.Data
             }
 
             Model m = new Model(modelTemplate);
-            foreach (String s in weapons)
+
+            // Only add the weapons if the weapons array exists
+            if (!(weapons == null) && !(weapons.Length == 0))
             {
-                Weapon w = getWeapon(s, m);
-                if (w == null)
+                foreach (String s in weapons)
                 {
-                    Logger.instance.log(LogType.ERROR, "Model loading failed, no Weapon obtained, " + s);
-                    return null;
-                }                
-                m.addWeapon(w);
+                    Weapon w = getWeapon(s, m);
+                    if (w == null)
+                    {
+                        Logger.instance.log(LogType.ERROR, "Model loading failed, no Weapon obtained, " + s);
+                        return null;
+                    }
+                    m.addWeapon(w);
+                }
             }
             return m;
         }
@@ -436,6 +445,7 @@ namespace wh40ksimconsole.Data
             if (armyCache.ContainsKey(armyName))
             {
                 Logger.instance.log(LogType.ERROR, "Army " + armyName + " already exists");
+                return;
             }
             JObject army = new JObject(
                 new JProperty("Name", armyName),

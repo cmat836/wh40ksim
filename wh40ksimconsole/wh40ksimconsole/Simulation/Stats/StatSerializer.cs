@@ -7,27 +7,37 @@ using System.Threading.Tasks;
 
 namespace wh40ksimconsole.Simulation.Stats
 {
+    /// <summary>
+    /// A Utility to convert a JObject into the stat it represents using the Type of stat stored in it
+    /// </summary>
     class StatSerializer
     {
-        public static Stat deSerialize(JObject obj, Model parent)
+        /// <summary>
+        /// Generate a stat object based on the JObject passed, you should pass a parent incase the stat needs one
+        /// </summary>
+        /// <param name="obj">The JObject containing the stat</param>
+        /// <param name="parent">The parent</param>
+        /// <returns></returns>
+        public static IStat deSerialize(JObject obj, Model parent)
         {
-            Stat stat = new FixedStat((int)obj["Value"]); ;
+            // Just switch based on stats Type, then runs the appropriate stat's deserialize function
+            IStat stat = new FixedStat(); ;
             switch((String)obj["Type"])
             {
                 case "FixedStat":
-                    stat = new FixedStat((int)obj["Value"]);
+                    stat = new FixedStat().deSerialize(obj);
                     break;
                 case "ModelDependentStat":
-                    stat = new ModelDependentStat((bool)obj["Multiplied"], (int)obj["Modifier"], parent);
+                    stat = new ModelDependentStat(parent).deSerialize(obj);
                     break;
                 case "RollStat":
-                    stat = new RollStat((bool)obj["NumberOfDice"], (int)obj["D6"]);
+                    stat = new RollStat().deSerialize(obj);
                     break;
                 case "VariStat":
-                    stat = new VariStat((int)obj["StatLevelUpper"], (int)obj["StatLevelMid"], (int)obj["StatLevelLower"], parent);
+                    stat = new VariStat(parent).deSerialize(obj);
                     break;
                 case "WoundStat":
-                    stat = new WoundsStat((int)obj["Value"], (int)obj["UpperRange"], (int)obj["MidRange"]);
+                    stat = new WoundsStat().deSerialize(obj);
                     break;
             }
             return stat;

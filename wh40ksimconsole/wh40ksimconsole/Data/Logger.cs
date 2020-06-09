@@ -108,6 +108,7 @@ namespace wh40ksimconsole.Data
         INFO,
         NOTE,
         WARNING,
+        RESULT,
         ERROR,
         FATAL
     }

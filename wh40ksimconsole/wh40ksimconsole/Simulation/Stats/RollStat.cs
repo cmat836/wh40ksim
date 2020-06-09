@@ -7,37 +7,79 @@ using Newtonsoft.Json.Linq;
 
 namespace wh40ksimconsole.Simulation.Stats
 {
-    class RollStat : Stat
+    /// <summary>
+    /// A stat that returns a random number every time its received
+    /// </summary>
+    class RollStat : IStat
     {
-        int numberofdice; // Only handles 1 d3
-        bool d6; // is the dice a d6, otherwise it will be a d3
+        /// <summary>
+        /// The number of dice to roll
+        /// </summary>
+        int numberofdice;
+        /// <summary>
+        /// Which dice to roll, true for d6, false for d3
+        /// </summary>
+        bool d6;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public RollStat()
+        {
+            numberofdice = 0;
+            d6 = true;
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="d6">The number of dice to roll</param>
+        /// <param name="dicenumber">Which dice to roll, true for d6, false for d3</param>
         public RollStat(bool d6, int dicenumber)
         {
             numberofdice = dicenumber;
             this.d6 = d6;
         }
 
+        /// <summary>
+        /// Returns the current value of the stat
+        /// </summary>
+        /// <returns></returns>
         public int get()
         {
             return d6 ? Simulator.instance.dice.rollD6(numberofdice) : Simulator.instance.dice.rollD3();
         }
 
+        /// <summary>
+        /// Resets the current stat
+        /// </summary>
         public void reset()
         {
            
         }
 
-        public Stat copy()
+        /// <summary>
+        /// Generate a new by value copy of the stat
+        /// </summary>
+        /// <returns></returns>
+        public IStat copy()
         {
             return new RollStat(d6, numberofdice);
         }
 
-        public Stat copy(Model newParent)
+        /// <summary>
+        /// Generate a new by value copy of the stat
+        /// </summary>
+        /// <returns></returns>
+        public IStat copy(Model newParent)
         {
             return new RollStat(d6, numberofdice);
         }
 
+        /// <summary>
+        /// Convert the stat into a json object for file storage
+        /// </summary>
+        /// <returns></returns>
         public JObject serialize()
         {
             JObject obj = new JObject(
@@ -45,6 +87,19 @@ namespace wh40ksimconsole.Simulation.Stats
                 new JProperty("NumberOfDice", numberofdice),
                 new JProperty("D6", d6));
             return obj;
+        }
+
+        /// <summary>
+        /// Assigns the properties of this stat from the JObject provided
+        /// Then returns itself for nice code :)
+        /// </summary>
+        /// <param name="stat">The stat in JObject form</param>
+        /// <returns></returns>
+        public IStat deSerialize(JObject stat)
+        {
+            numberofdice = (int)stat["NumberOfDice"];
+            this.d6 = (bool)stat["D6"];
+            return this;
         }
     }
 }

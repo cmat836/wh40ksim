@@ -1,1 +1,7 @@
-﻿Utilize exceptions during model loading (DataReader, Modelstore)
+﻿Utilize exceptions during model loading (DataReader, Modelstore)??
+
+Battle
+	Allow battle to support multiple units on each side
+
+Simulator 
+	Check all phases are taken care of

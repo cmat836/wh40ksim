@@ -10,15 +10,15 @@ namespace wh40ksimconsole.Simulation
 {
     public class Model
     {
-        public Stat weaponSkill;
-        public Stat ballisticSkill;
-        public Stat strength;
-        public Stat toughness;
-        public Stat wounds;
-        public Stat attacks;
-        public Stat leadership;
-        public Stat armourSave;
-        public Stat invulnerableSave;
+        public IStat weaponSkill;
+        public IStat ballisticSkill;
+        public IStat strength;
+        public IStat toughness;
+        public IStat wounds;
+        public IStat attacks;
+        public IStat leadership;
+        public IStat armourSave;
+        public IStat invulnerableSave;
 
         public String name;
 
@@ -34,7 +34,7 @@ namespace wh40ksimconsole.Simulation
             equippedWeapons = new List<Weapon>();
         }
 
-        public Model(String name, Stat weaponSkill, Stat ballisticSkill, Stat strength, Stat toughness, Stat wounds, Stat attacks, Stat leadership, Stat armourSave, Stat invulnerableSave, List<String> weaponLoadout, List<String> equipmentLoadout)
+        public Model(String name, IStat weaponSkill, IStat ballisticSkill, IStat strength, IStat toughness, IStat wounds, IStat attacks, IStat leadership, IStat armourSave, IStat invulnerableSave, List<String> weaponLoadout, List<String> equipmentLoadout)
         {
             this.name = name;
             this.weaponSkill = weaponSkill;
@@ -74,7 +74,7 @@ namespace wh40ksimconsole.Simulation
             }
         }
 
-        public void assignStats(Stat weaponSkill, Stat ballisticSkill, Stat strength, Stat toughness, Stat wounds, Stat attacks, Stat leadership, Stat armourSave, Stat invulnerableSave, List<String> weaponLoadout, List<String> equipmentLoadout)
+        public void assignStats(IStat weaponSkill, IStat ballisticSkill, IStat strength, IStat toughness, IStat wounds, IStat attacks, IStat leadership, IStat armourSave, IStat invulnerableSave, List<String> weaponLoadout, List<String> equipmentLoadout)
         {
             this.weaponSkill = weaponSkill;
             this.ballisticSkill = ballisticSkill;

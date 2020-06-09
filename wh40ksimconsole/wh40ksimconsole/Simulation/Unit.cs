@@ -6,16 +6,46 @@ using System.Threading.Tasks;
 
 namespace wh40ksimconsole.Simulation
 {
+    /// <summary>
+    /// A Unit of models
+    /// </summary>
     class Unit
     {
-        public List<Model> models;
+        /// <summary>
+        /// The models in the unit
+        /// </summary>
+        List<Model> modelList;
 
         public TargetingMode targeting = TargetingMode.ORDER;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="mode">The targeting mode the unit will use when attacking other units</param>
         public Unit(TargetingMode mode)
         {
             this.targeting = mode;
-            models = new List<Model>();
+            modelList = new List<Model>();
+        }
+
+        /// <summary>
+        /// Adds model/s to the unit, checking if they are valid models first
+        /// </summary>
+        /// <param name="models">The models to be added</param>
+        public Unit addModel(params Model[] models)
+        {
+            if (models == null || models.Length == 0)
+            {
+                return this;
+            }
+            foreach (Model m in models)
+            {
+                if (m != null)
+                {
+                    modelList.Add(m);
+                }
+            }
+            return this;
         }
 
         // MAKE SURE TO IMPLEMENT LOGIC IN MODELS THAT THEY CANT ATTACK IF DEAD UNLESS THEY ARE ALLOWED TO IN THE RULES
@@ -23,7 +53,7 @@ namespace wh40ksimconsole.Simulation
         {
             if (targeting == TargetingMode.ORDER)
             {
-                foreach (Model attackM in models)
+                foreach (Model attackM in modelList)
                 {
                     attackM.generateShots();
                     if (!attackM.isAlive())
@@ -51,7 +81,7 @@ namespace wh40ksimconsole.Simulation
 
         public Model getFirstAliveModel()
         {
-            foreach (Model m in models)
+            foreach (Model m in modelList)
             {
                 if (m.isAlive())
                 {
@@ -64,7 +94,7 @@ namespace wh40ksimconsole.Simulation
         public bool isAlive()
         {
             int wounds = 0;
-            foreach (Model m in models)
+            foreach (Model m in modelList)
             {
                 wounds += (m.isAlive() ? 1 : 0);
             }
@@ -74,7 +104,7 @@ namespace wh40ksimconsole.Simulation
         public int getTotalWounds()
         {
             int wounds = 0;
-            foreach (Model m in models)
+            foreach (Model m in modelList)
             {
                 wounds += (m.isAlive() ? 1 : 0);
             }
@@ -83,7 +113,7 @@ namespace wh40ksimconsole.Simulation
 
         public void reset()
         {
-            foreach (Model m in models)
+            foreach (Model m in modelList)
             {
                 m.reset();
             }

@@ -10,12 +10,12 @@ namespace wh40ksimconsole.Simulation
 {
     public class Weapon
     {
-        public Stat range;
+        public IStat range;
         public WeaponType type;
-        public Stat strength;
-        public Stat AP;
-        public Stat damage;
-        public Stat shots;
+        public IStat strength;
+        public IStat AP;
+        public IStat damage;
+        public IStat shots;
 
         public String name;
 
@@ -23,7 +23,7 @@ namespace wh40ksimconsole.Simulation
 
         Model parent;
 
-        public Weapon(String name, Stat range, WeaponType type, Stat strength, Stat AP, Stat damage, Stat shots)
+        public Weapon(String name, IStat range, WeaponType type, IStat strength, IStat AP, IStat damage, IStat shots)
         {
             this.name = name;
             this.range = range;

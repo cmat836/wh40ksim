@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace wh40ksimconsole.Simulation
 {
+    /// <summary>
+    /// An Enum for which player is which
+    /// </summary>
     public enum Player
     {
         PLAYER1,

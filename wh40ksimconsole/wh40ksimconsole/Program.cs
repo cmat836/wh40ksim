@@ -23,7 +23,7 @@ namespace wh40ksimconsole
         {
             Logger.instance = new Logger(LogType.INFO, "../../Logs/", 1);
 
-            s = new Simulator();
+            s = new Simulator(20);
             //mainWindow = new SimulatorWindow();
             //mainWindowApp = new Application();
             //mainWindowApp.Run(mainWindow);
@@ -50,26 +50,22 @@ namespace wh40ksimconsole
                 store.addModel("Space Marines", "Devastator", terminator);
                 store.addArmy("Custodes");
 
-                Model marine1 = store.getModel("Space Marines:Tactical Marine", new String[] { "Space Marines:Boltgun" });
-                Model term1 = store.getModel("Tyranids:Termagaunt", new String[] { "Tyranids:Fleshborer" });
-                Model term2 = store.getModel("Tyranids:Termagaunt", new String[] { "Tyranids:Fleshborer" });
-                Model term3 = store.getModel("Tyranids:Termagaunt", new String[] { "Tyranids:Fleshborer" });
-                Model term4 = store.getModel("Tyranids:Termagaunt", new String[] { "Tyranids:Fleshborer" });
+                Model marine1 = store.getModel("Space Marines:Tactical Marine", "Space Marines:Boltgun");
+                Model term1 = store.getModel("Tyranids:Termagaunt", "Tyranids:Fleshborer");
+                Model term2 = store.getModel("Tyranids:Termagaunt", "Tyranids:Fleshborer");
+                Model term3 = store.getModel("Tyranids:Termagaunt", "Tyranids:Fleshborer");
+                Model term4 = store.getModel("Tyranids:Termagaunt", "Tyranids:Fleshborer");
 
-                Unit spess = new Unit(TargetingMode.ORDER);
-                spess.models.Add(marine1);
-                Unit tyr = new Unit(TargetingMode.ORDER);
-                tyr.models.Add(term1);
-                tyr.models.Add(term2);
-                tyr.models.Add(term3);
-                tyr.models.Add(term4);
+                Unit spess = new Unit(TargetingMode.ORDER).addModel(marine1);
+                Unit tyr = new Unit(TargetingMode.ORDER).addModel(term1, term2, term3, term4);
 
-                store.getModel("Termagaunt", new String[] { "Badborer" });
+                store.getModel("Termagaunt", "Badborer");
 
                 int numberOfRuns = 10000;
+                Battle b = new Battle(spess, tyr, Player.PLAYER1);
                 for (int i = 0; i < numberOfRuns; i++)
                 {
-                    s.Simulate(new Battle(spess, tyr, Player.PLAYER1));
+                    s.Simulate(b);
                 }
 
                 SimulatorResult result = s.processResults();
