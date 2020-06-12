@@ -5,13 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using wh40ksimconsole.Data;
 
 namespace wh40ksimconsole.Simulation.Stats
 {
     /// <summary>
     /// A Stat that changed depending on the Models Strength
     /// </summary>
-    class ModelDependentStat : IStat
+    class ModelDependentStat : IStat, IJObjectSerializable
     {
         /// <summary>
         /// What does the modifier do to the stat, true if multiplicative, false if additive

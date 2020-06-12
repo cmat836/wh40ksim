@@ -1,5 +1,6 @@
 {
   "Name": "Fleshborer",
+  "Points": 0,
   "Range": {
     "Type": "FixedStat",
     "Value": 12

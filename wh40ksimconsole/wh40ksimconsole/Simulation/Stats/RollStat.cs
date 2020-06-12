@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using wh40ksimconsole.Data;
 
 namespace wh40ksimconsole.Simulation.Stats
 {
     /// <summary>
     /// A stat that returns a random number every time its received
     /// </summary>
-    class RollStat : IStat
+    class RollStat : IStat, IJObjectSerializable
     {
         /// <summary>
         /// The number of dice to roll

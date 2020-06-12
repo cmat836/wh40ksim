@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using wh40ksimconsole.Data;
 
 namespace wh40ksimconsole.Simulation.Stats
 {
     /// <summary>
     /// A Stat that represents how many wounds a model has left, also stores wound breakpoints
     /// </summary>
-    class WoundsStat : IStat
+    class WoundsStat : IStat, IJObjectSerializable
     {
         /// <summary>
         /// The maximum value of the wounds

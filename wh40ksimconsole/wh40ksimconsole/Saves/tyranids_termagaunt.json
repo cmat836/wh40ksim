@@ -1,5 +1,6 @@
 {
   "Name": "Termagaunt",
+  "Points": 4,
   "WeaponSkill": {
     "Type": "FixedStat",
     "Value": 4

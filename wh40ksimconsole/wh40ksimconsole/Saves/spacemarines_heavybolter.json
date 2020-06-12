@@ -1,5 +1,6 @@
 {
-  "Name": "Storm bolter",
+  "Name": "Heavy Bolter",
+  "Points": 10,
   "Range": {
     "Type": "FixedStat",
     "Value": 24

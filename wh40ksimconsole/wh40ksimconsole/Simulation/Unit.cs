@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using wh40ksimconsole.Data;
 
 namespace wh40ksimconsole.Simulation
 {
@@ -34,15 +35,22 @@ namespace wh40ksimconsole.Simulation
         /// <param name="models">The models to be added</param>
         public Unit addModel(params Model[] models)
         {
+            // Check the list exists
             if (models == null || models.Length == 0)
             {
+                Logger.instance.log(LogType.WARNING, "Warning, you are trying to add models that dont exist");
                 return this;
             }
             foreach (Model m in models)
             {
+                // Check the model exists
                 if (m != null)
                 {
                     modelList.Add(m);
+                }
+                else
+                {
+                    Logger.instance.log(LogType.WARNING, "Warning, you are trying to add models that dont exist");
                 }
             }
             return this;

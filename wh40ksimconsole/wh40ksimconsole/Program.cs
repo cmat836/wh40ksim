@@ -28,28 +28,25 @@ namespace wh40ksimconsole
             //mainWindowApp = new Application();
             //mainWindowApp.Run(mainWindow);
 
-            Weapon boltgun = new Weapon("Boltgun", new FixedStat(24), Weapon.WeaponType.RAPIDFIRE, new FixedStat(4), new FixedStat(0), new FixedStat(1), new FixedStat(2));
-            Weapon fleshborer = new Weapon("Fleshborer", new FixedStat(12), Weapon.WeaponType.ASSAULT, new FixedStat(4), new FixedStat(0), new FixedStat(1), new FixedStat(1));
+            Model carnifex = new Model("Carnifex");
+            carnifex.assignStats(67, new FixedStat(4), new FixedStat(4), new FixedStat(6), new FixedStat(7), new WoundsStat(8), new FixedStat(4), new FixedStat(6), new FixedStat(3), new FixedStat(7), 
+                new List<string> {"Bio-Plasma", "Spine banks", "Bone mace", "Monstrous acid maw", "Monstrous crushing claws", "Monstrous scything talons", "Thresher scythe",
+                "Stranglethorn cannon", "Heavy venom cannon", "Deathspitter with slimer maggots", "Devourer with brainleech worms"}, 
+                new List<string> { "Toxin sacs", "Adrenal glands", "Enhanced Sensors", "Tusks", "Chitin thorns"});
 
-            Model spessmarine = new Model("Tactical Marine", new FixedStat(3), new FixedStat(3), new FixedStat(4), new FixedStat(4), new WoundsStat(1), new FixedStat(1), new FixedStat(7), new FixedStat(3), new FixedStat(7), new List<string>() { "Boltgun" }, new List<string>());
 
-            Model term = new Model("Termagaunt", new FixedStat(4), new FixedStat(4), new FixedStat(3), new FixedStat(3), new WoundsStat(1), new FixedStat(1), new FixedStat(5), new FixedStat(6), new FixedStat(7), new List<string>() { "Fleshborer" }, new List<string>());
+            Weapon devourer = new Weapon("Devourer with brainleech worms", 7, new FixedStat(18), Weapon.WeaponType.ASSAULT, new FixedStat(6), new FixedStat(0), new FixedStat(1), new FixedStat(6));
+            carnifex.addWeapon(devourer.copy(), devourer.copy(), devourer.copy(), devourer.copy());
 
-            spessmarine.addWeapon(boltgun);
-            term.addWeapon(fleshborer);
+            Wargear sensors = new Wargear("Enhanced Sensors", 10, false).addModifier(new Modifier(3, ModifierMethod.SET, ModifierTarget.BALLISTICSKILL));
+            carnifex.addWargear(sensors);
+
+            Logger.instance.log(LogType.INFO, sensors.serialize());
 
             ModelStore store = new ModelStore("../../Saves/Manifest.json");
 
             if (store.load())
             {
-                Weapon stormbolter = new Weapon("Storm bolter", new FixedStat(24), Weapon.WeaponType.RAPIDFIRE, new FixedStat(4), new FixedStat(0), new FixedStat(1), new FixedStat(2));
-
-                Model terminator = new Model("Terminator", new FixedStat(3), new FixedStat(3), new FixedStat(4), new FixedStat(4), new WoundsStat(2), new FixedStat(2), new FixedStat(8), new FixedStat(2), new FixedStat(5), new List<string>() { "Stormbolter" }, new List<string>());
-
-                store.addWeapon("Tyranids", "Devourer", fleshborer);
-                store.addModel("Space Marines", "Devastator", terminator);
-                store.addArmy("Custodes");
-
                 Model marine1 = store.getModel("Space Marines:Tactical Marine", "Space Marines:Boltgun");
                 Model term1 = store.getModel("Tyranids:Termagaunt", "Tyranids:Fleshborer");
                 Model term2 = store.getModel("Tyranids:Termagaunt", "Tyranids:Fleshborer");

@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using wh40ksimconsole.Data;
 
 namespace wh40ksimconsole.Simulation.Stats
 {
     /// <summary>
     /// A stat that varies as the model is wounded
     /// </summary>
-    class VariStat : IStat
+    class VariStat : IStat, IJObjectSerializable
     {
         /// <summary>
         /// The stat if the model is in the upper wound range

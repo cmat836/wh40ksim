@@ -5,13 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using wh40ksimconsole.Data;
 
 namespace wh40ksimconsole.Simulation.Stats
 {
     /// <summary>
     /// A fixed stat that should not change
     /// </summary>
-    class FixedStat : IStat 
+    class FixedStat : IStat, IJObjectSerializable 
     {
         /// <summary>
         /// The max value the stat can have

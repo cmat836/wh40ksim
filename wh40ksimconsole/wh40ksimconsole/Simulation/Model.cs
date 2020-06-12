@@ -5,13 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using wh40ksimconsole.Simulation.Stats;
 using Newtonsoft.Json.Linq;
+using wh40ksimconsole.Data;
 
 namespace wh40ksimconsole.Simulation
 {
     /// <summary>
     /// A single Model with stats and weapons
     /// </summary>
-    public class Model
+    public class Model : IJObjectSerializable
     {
         /// <summary>
         /// The Model's weapons skill
@@ -51,6 +52,11 @@ namespace wh40ksimconsole.Simulation
         public IStat invulnerableSave;
 
         /// <summary>
+        /// The base number of points the model is worth
+        /// </summary>
+        public int basePoints;
+
+        /// <summary>
         /// The name of the Model
         /// </summary>
         public String name;
@@ -59,6 +65,10 @@ namespace wh40ksimconsole.Simulation
         /// A list of all the equipped weapons, please never add to this manually
         /// </summary>
         List<Weapon> equippedWeapons;
+        /// <summary>
+        /// A list of all the equipped wargear
+        /// </summary>
+        List<Wargear> equippedWargear;
 
         /// <summary>
         /// The weapons that are available to this Model
@@ -67,7 +77,16 @@ namespace wh40ksimconsole.Simulation
         /// <summary>
         /// The Equipment that is available to this Model
         /// </summary>
-        List<String> equipmentLoadout;
+        List<String> wargearLoadout;
+
+        /// <summary>
+        /// All the modifiers currently applied to the model
+        /// </summary>
+        List<Modifier> modifiers;
+        /// <summary>
+        /// The abilities this model has
+        /// </summary>
+        List<Ability> abilities;
 
         /// <summary>
         /// Constructor
@@ -77,12 +96,16 @@ namespace wh40ksimconsole.Simulation
         {
             this.name = name;
             equippedWeapons = new List<Weapon>();
+            equippedWargear = new List<Wargear>();
+            modifiers = new List<Modifier>();
+            abilities = new List<Ability>();
         }
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="name">The name of the Model</param>
+        /// <param name="points">The base number of points the model is worth</param>
         /// <param name="weaponSkill">The Model's weapons skill</param>
         /// <param name="ballisticSkill">The Model's ballistics skill</param>
         /// <param name="strength">The Model's strength</param>
@@ -93,10 +116,11 @@ namespace wh40ksimconsole.Simulation
         /// <param name="armourSave">The Model's armour save</param>
         /// <param name="invulnerableSave">The Model's invulnerable save</param>
         /// <param name="weaponLoadout">The weapons that are available to this Model</param>
-        /// <param name="equipmentLoadout">The Equipment that is available to this Model</param>
-        public Model(String name, IStat weaponSkill, IStat ballisticSkill, IStat strength, IStat toughness, IStat wounds, IStat attacks, IStat leadership, IStat armourSave, IStat invulnerableSave, List<String> weaponLoadout, List<String> equipmentLoadout)
+        /// <param name="wargearLoadout">The Equipment that is available to this Model</param>
+        public Model(String name, int points, IStat weaponSkill, IStat ballisticSkill, IStat strength, IStat toughness, IStat wounds, IStat attacks, IStat leadership, IStat armourSave, IStat invulnerableSave, List<String> weaponLoadout, List<String> wargearLoadout)
         {
             this.name = name;
+            this.basePoints = points;
             this.weaponSkill = weaponSkill;
             this.ballisticSkill = ballisticSkill;
             this.strength = strength;
@@ -107,8 +131,11 @@ namespace wh40ksimconsole.Simulation
             this.armourSave = armourSave;
             this.invulnerableSave = invulnerableSave;
             this.weaponLoadout = weaponLoadout;
-            this.equipmentLoadout = equipmentLoadout;
+            this.wargearLoadout = wargearLoadout;
             equippedWeapons = new List<Weapon>();
+            equippedWargear = new List<Wargear>();
+            modifiers = new List<Modifier>();
+            abilities = new List<Ability>();
         }
 
         /// <summary>
@@ -127,9 +154,13 @@ namespace wh40ksimconsole.Simulation
             this.leadership = StatSerializer.deSerialize((JObject)obj["Leadership"], this);
             this.armourSave = StatSerializer.deSerialize((JObject)obj["ArmourSave"], this);
             this.invulnerableSave = StatSerializer.deSerialize((JObject)obj["InvulnerableSave"], this);
+            this.basePoints = (int)obj["Points"];
             equippedWeapons = new List<Weapon>();
+            equippedWargear = new List<Wargear>();
+            modifiers = new List<Modifier>();
+            abilities = new List<Ability>();
             weaponLoadout = new List<string>();
-            equipmentLoadout = new List<string>();
+            wargearLoadout = new List<string>();
             JArray weaponArray = (JArray)obj["Weapons"];
             foreach (JToken w in weaponArray)
             {
@@ -141,6 +172,7 @@ namespace wh40ksimconsole.Simulation
         /// <summary>
         /// A Shorthand method to assign stats to a Model
         /// </summary>
+        /// <param name="points">The base number of points the model is worth</param>
         /// <param name="weaponSkill">The Model's weapons skill</param>
         /// <param name="ballisticSkill">The Model's ballistics skill</param>
         /// <param name="strength">The Model's strength</param>
@@ -152,8 +184,9 @@ namespace wh40ksimconsole.Simulation
         /// <param name="invulnerableSave">The Model's invulnerable save</param>
         /// <param name="weaponLoadout">The weapons that are available to this Model</param>
         /// <param name="equipmentLoadout">The Equipment that is available to this Model</param>
-        public void assignStats(IStat weaponSkill, IStat ballisticSkill, IStat strength, IStat toughness, IStat wounds, IStat attacks, IStat leadership, IStat armourSave, IStat invulnerableSave, List<String> weaponLoadout, List<String> equipmentLoadout)
+        public void assignStats(int points, IStat weaponSkill, IStat ballisticSkill, IStat strength, IStat toughness, IStat wounds, IStat attacks, IStat leadership, IStat armourSave, IStat invulnerableSave, List<String> weaponLoadout, List<String> equipmentLoadout)
         {
+            this.basePoints = points;
             this.weaponSkill = weaponSkill;
             this.ballisticSkill = ballisticSkill;
             this.strength = strength;
@@ -164,17 +197,112 @@ namespace wh40ksimconsole.Simulation
             this.armourSave = armourSave;
             this.invulnerableSave = invulnerableSave;
             this.weaponLoadout = weaponLoadout;
-            this.equipmentLoadout = equipmentLoadout;
+            this.wargearLoadout = equipmentLoadout;
         }
 
         /// <summary>
-        /// Adds a Weapon to the Model, setting this as its parent
+        /// Adds one or more weapons to this model, setting this as its parent
         /// </summary>
-        /// <param name="weapon">The Weapon to add</param>
-        public void addWeapon(Weapon weapon)
+        /// <param name="weapons">The Weapons to add</param>
+        public void addWeapon(params Weapon[] weapons)
         {
-            weapon.setParent(this);
-            equippedWeapons.Add(weapon);
+            // Check if the list exists
+            if (weapons == null || weapons.Length == 0)
+            {
+                Logger.instance.log(LogType.WARNING, "You are trying to add weapons that dont exist");
+                return;
+            }
+            foreach (Weapon w in weapons)
+            {
+                // Check if the weapon exists
+                if (w == null)
+                {
+                    Logger.instance.log(LogType.WARNING, "One of the weapons you tried to add was null");
+                    continue;
+                }
+                // Check the model is allowed to use it
+                if (!weaponLoadout.Contains(w.name))
+                {
+                    Logger.instance.log(LogType.WARNING, w.name + " cannot be equipped by " + this.name);
+                    continue;
+                }
+                w.setParent(this);
+                equippedWeapons.Add(w);
+            }
+        }
+
+        public void addWargear(params Wargear[] wargear)
+        {
+            // Check if the list exists
+            if (wargear == null || wargear.Length == 0)
+            {
+                Logger.instance.log(LogType.WARNING, "You are trying to add wargear that doesnt exist");
+                return;
+            }
+            foreach (Wargear w in wargear)
+            {
+                // Check if the weapon exists
+                if (w == null)
+                {
+                    Logger.instance.log(LogType.WARNING, "Some of the wargear you tried to add was null");
+                    continue;
+                }
+                // Check the model is allowed to use it
+                if (!wargearLoadout.Contains(w.name))
+                {
+                    Logger.instance.log(LogType.WARNING, w.name + " cannot be equipped by " + this.name);
+                    continue;
+                }
+                equippedWargear.Add(w);
+                addModifier(w.modifiers.ToArray());
+            }
+        }
+
+        /// <summary>
+        /// Adds one of more modifiers to this model
+        /// </summary>
+        /// <param name="mod"></param>
+        public void addModifier(params Modifier[] mod) 
+        {
+            // Check if the list exists
+            if (mod == null || mod.Length == 0)
+            {
+                Logger.instance.log(LogType.WARNING, "You are trying to add modifiers that dont exist");
+                return;
+            }
+            modifiers.AddRange(mod);
+        }
+
+        /// <summary>
+        /// Adds one or more abilities to this model
+        /// </summary>
+        /// <param name="ability"></param>
+        public void addAbility(params Ability[] ability)
+        {
+            // Check if the list exists
+            if (ability == null || ability.Length == 0)
+            {
+                Logger.instance.log(LogType.WARNING, "You are trying to add modifiers that dont exist");
+                return;
+            }
+            abilities.AddRange(ability);
+        }
+
+        /// <summary>
+        /// Returns the total number of points this model + all its wargear/options is worth
+        /// </summary>
+        /// <returns></returns>
+        public int getPointsTotal()
+        {
+            int total = basePoints;
+            // Add weapon points
+            foreach (Weapon w in equippedWeapons)
+            {
+                total += w.basePoints;
+            }
+            // Add gear points
+            // Add optional points
+            return total;
         }
 
         /// <summary>
@@ -193,7 +321,7 @@ namespace wh40ksimconsole.Simulation
 
             } else
             {
-                if (Simulator.instance.dice.makeCheck(ballisticSkill.get()))
+                if (Simulator.instance.dice.makeCheck(getModifiedBallisticSkill()))
                 {
                     w.attack(this, target);
                 }
@@ -242,6 +370,34 @@ namespace wh40ksimconsole.Simulation
         }
 
         /// <summary>
+        /// Gets the units hit roll affected by modifiers
+        /// </summary>
+        /// <returns></returns>
+        public int getModifiedBallisticSkill()
+        {
+            // If its unmodified, just return it
+            if (modifiers.Count == 0)
+            {
+                return ballisticSkill.get();
+            }
+            // Find all the ballistics skill modifiers
+            List<Modifier> ballistics = modifiers.FindAll(m => (m.target == ModifierTarget.BALLISTICSKILL));
+            int bestSet = 7;
+            foreach (Modifier m in ballistics.FindAll(m => (m.method == ModifierMethod.SET)))
+            {
+                bestSet = Math.Min(bestSet, m.value);
+            }
+            foreach (Modifier m in ballistics.FindAll(m => (m.method == ModifierMethod.MULTIPLICATIVE)))
+            {
+                bestSet *= m.value;
+            }
+            foreach (Modifier m in ballistics.FindAll(m => (m.method == ModifierMethod.ADDITIVE)))
+            {
+                bestSet += m.value;
+            }
+            return bestSet;
+        }
+        /// <summary>
         /// Wound the model, handles what occurs if the model dies
         /// </summary>
         /// <param name="wound">How many wounds to remove</param>
@@ -284,11 +440,16 @@ namespace wh40ksimconsole.Simulation
         public Model copy()
         {
             Model m = new Model(name);
-            m.assignStats(weaponSkill.copy(m), ballisticSkill.copy(m), strength.copy(m), toughness.copy(m), wounds.copy(m), attacks.copy(m), leadership.copy(m), armourSave.copy(m), invulnerableSave.copy(m), new List<string>(weaponLoadout), new List<string>(equipmentLoadout));           
+            m.assignStats(basePoints, weaponSkill.copy(m), ballisticSkill.copy(m), strength.copy(m), toughness.copy(m), wounds.copy(m), attacks.copy(m), leadership.copy(m), armourSave.copy(m), invulnerableSave.copy(m), new List<string>(weaponLoadout), new List<string>(wargearLoadout));           
 
             foreach (Weapon w in equippedWeapons)
             {
                 m.addWeapon(w.copy());
+            }
+
+            foreach (Wargear w in equippedWargear)
+            {
+                m.addWargear(w);
             }
 
             return m;
@@ -310,6 +471,7 @@ namespace wh40ksimconsole.Simulation
         {
             JObject obj = new JObject(
                 new JProperty("Name", name),
+                new JProperty("Points", basePoints),
                 new JProperty("WeaponSkill", weaponSkill.serialize()),
                 new JProperty("BallisticSkill", ballisticSkill.serialize()),
                 new JProperty("Strength", strength.serialize()),

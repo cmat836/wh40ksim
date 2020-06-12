@@ -5,13 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using wh40ksimconsole.Simulation.Stats;
 using Newtonsoft.Json.Linq;
+using wh40ksimconsole.Data;
 
 namespace wh40ksimconsole.Simulation
 {
     /// <summary>
     /// A Single weapon, used to make attacks
     /// </summary>
-    public class Weapon
+    public class Weapon : IJObjectSerializable
     {
         /// <summary>
         /// The range of the weapon
@@ -44,6 +45,11 @@ namespace wh40ksimconsole.Simulation
         public String name;
 
         /// <summary>
+        /// The base number of points the model is worth
+        /// </summary>
+        public int basePoints;
+
+        /// <summary>
         /// How many shots this weapon has left this turn
         /// </summary>
         int shotsRemaining;
@@ -57,15 +63,17 @@ namespace wh40ksimconsole.Simulation
         /// Constructor
         /// </summary>
         /// <param name="name">The name of the weapon</param>
+        /// <param name="points">The base number of points the weapon is worth</param>
         /// <param name="range">The range of the weapon</param>
         /// <param name="type">The weapons type</param>
         /// <param name="strength">The weapons strength</param>
         /// <param name="AP">The weapons Armour penetration</param>
         /// <param name="damage">The weapons damage</param>
         /// <param name="shots">How many shots the weapon has per turn</param>
-        public Weapon(String name, IStat range, WeaponType type, IStat strength, IStat AP, IStat damage, IStat shots)
+        public Weapon(String name, int points, IStat range, WeaponType type, IStat strength, IStat AP, IStat damage, IStat shots)
         {
             this.name = name;
+            this.basePoints = points;
             this.range = range;
             this.type = type;
             this.strength = strength;
@@ -88,6 +96,7 @@ namespace wh40ksimconsole.Simulation
             this.AP = StatSerializer.deSerialize((JObject)obj["AP"], parent); ;
             this.damage = StatSerializer.deSerialize((JObject)obj["Damage"], parent);
             this.shots = StatSerializer.deSerialize((JObject)obj["Shots"], parent);
+            this.basePoints = (int)obj["Points"];
             this.parent = parent;
         }
 
@@ -165,7 +174,7 @@ namespace wh40ksimconsole.Simulation
         /// <returns></returns>
         public Weapon copy()
         {
-            return new Weapon(name, range.copy(), type, strength.copy(), AP.copy(), damage.copy(), shots.copy());
+            return new Weapon(name, basePoints, range.copy(), type, strength.copy(), AP.copy(), damage.copy(), shots.copy());
         }
 
         /// <summary>
@@ -176,6 +185,7 @@ namespace wh40ksimconsole.Simulation
         {
             JObject obj = new JObject(
                 new JProperty("Name", name),
+                new JProperty("Points", basePoints),
                 new JProperty("Range", range.serialize()),
                 new JProperty("Type", type),
                 new JProperty("Strength", strength.serialize()),

@@ -49,6 +49,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\IJObjectSerializable.cs" />
     <Compile Include="Data\Logger.cs" />
     <Compile Include="Data\DataReader.cs" />
     <Compile Include="Data\ModelStore.cs" />
@@ -59,6 +60,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Simulation\Ability.cs" />
     <Compile Include="Simulation\Battle.cs" />
     <Compile Include="Simulation\BattleResult.cs" />
     <Compile Include="Simulation\Dice.cs" />
@@ -67,6 +69,7 @@
     <Compile Include="Simulation\SimulatorResult.cs" />
     <Compile Include="Simulation\Stats\FixedStat.cs" />
     <Compile Include="Simulation\Stats\ModelDepedentStat.cs" />
+    <Compile Include="Simulation\Stats\Modifier.cs" />
     <Compile Include="Simulation\Stats\RollStat.cs" />
     <Compile Include="Simulation\Simulator.cs" />
     <Compile Include="Simulation\Stats\IStat.cs" />
@@ -74,6 +77,7 @@
     <Compile Include="Simulation\Stats\WoundsStat.cs" />
     <Compile Include="Simulation\Unit.cs" />
     <Compile Include="Simulation\Stats\VariStat.cs" />
+    <Compile Include="Simulation\Wargear.cs" />
     <Compile Include="Simulation\Weapon.cs" />
     <Compile Include="SimulatorWindow.xaml.cs">
       <DependentUpon>SimulatorWindow.xaml</DependentUpon>
@@ -90,6 +94,7 @@
     <None Include="Saves\spacemarines_boltgun.json" />
     <None Include="Saves\spacemarines_devastator.json" />
     <None Include="Saves\spacemarines_heavybolter.json" />
+    <None Include="Saves\spacemarines_terminator.json" />
     <None Include="Saves\tyranids_devourer.json" />
     <None Include="Saves\tyranids_fleshborer.json" />
     <None Include="Saves\Manifest.json" />
@@ -98,7 +103,6 @@
     <None Include="Saves\spacemarines_stormbolter.json" />
     <None Include="Saves\spacemarines_tacticalmarine.json" />
     <None Include="Saves\tyranids_termagaunt.json" />
-    <None Include="Saves\spacemarines_terminator.json" />
     <None Include="Saves\tyranids.json" />
   </ItemGroup>
   <ItemGroup>

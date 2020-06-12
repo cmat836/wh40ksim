@@ -2,20 +2,42 @@
 
 Battle
 	Allow battle to support multiple units on each side
+	Starting distance between Armies
 
 Simulator 
 	Check all phases are taken care of
+	Use Movement and charge phase to check if melee is reached??
+	Morale Phase, d6 + models slain that turn > leadership, remove x models
+		Weakest first (Points)
+		Weakest first (Wounds)
 
 Unit
-	Implement multiple targeting modes
+	Change targeting modes to wound allocation modes
+	If a model has already taken damage it must be allocated to
+	Otherwise choose
+		Order (Start to finish)
+		Random (Pick a model)
+		Strongest First (Points)
+		Weakest First (Points)
+		Custom order (Numerical)
 	Implement different attack methods for different phases
 
 Model
 	Implement different attack methods for different phases
 	Add code in model preventing attacking if the Model is dead
+	Implement Psychic power lists and rules
 
 Equipment
 
 Special Rules
 
+Stratagems (Global flags)
+
 Psychic Powers
+	Psychic Powers Seperate Loadout
+
+
+Things done since last update
+	More validation on models/weapons
+	Points
+

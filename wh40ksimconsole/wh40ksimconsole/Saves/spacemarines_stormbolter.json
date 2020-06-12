@@ -1,5 +1,6 @@
 {
   "Name": "Storm bolter",
+  "Points":  2,
   "Range": {
     "Type": "FixedStat",
     "Value": 24

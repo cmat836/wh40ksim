@@ -54,7 +54,11 @@ namespace wh40ksimconsole.Simulation
             state = SimulationState.SIMULATING;
             while (state == SimulationState.SIMULATING)
             {
-                //Attack
+                /* Movement Phase */
+
+                /* Psychic Phase */
+
+                /* Shooting Phase */
                 if (battle.first == Player.PLAYER1)
                 {
                     battle.unit1.attack(battle.unit2);
@@ -69,6 +73,12 @@ namespace wh40ksimconsole.Simulation
                 {
                     state = SimulationState.FINISHED;
                 }
+
+                /* Charge Phase */
+
+                /* Fight Phase */
+
+                /* Morale Phase */
                 battle.incrementTurn();
                 if (battle.turnsExpired >= timeoutThreshold)
                 {

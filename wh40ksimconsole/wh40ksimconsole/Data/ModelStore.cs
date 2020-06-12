@@ -312,6 +312,25 @@ namespace wh40ksimconsole.Data
                             badModels.Add(modelListing);
                             continue;
                         }
+                        // Check if the Models are proper
+                        try
+                        {
+                            Model test = new Model(model);
+                        }
+                        catch (ArgumentNullException)
+                        {
+                            Logger.instance.log(LogType.ERROR, "Model " + kvp.Key + ":" + (String)modelListing + " did not load because of missing tags");
+                            incompleteLoad = true;
+                            badModels.Add(modelListing);
+                            continue;
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.instance.log(LogType.ERROR, "Model " + kvp.Key + ":" + (String)modelListing + " did not load because of an unknown error " + e.Message);
+                            incompleteLoad = true;
+                            badModels.Add(modelListing);
+                            continue;
+                        }
                         modelCache.Add(kvp.Key + ":" + (String)modelListing, model);
                     }
 
@@ -330,6 +349,25 @@ namespace wh40ksimconsole.Data
                         if (weaponCache.ContainsKey(kvp.Key + ":" + (String)weaponListing))
                         {
                             Logger.instance.log(LogType.ERROR, "Weapon " + kvp.Key + ":" + (String)weaponListing + " already exists in the cache");
+                            incompleteLoad = true;
+                            badWeapons.Add(weaponListing);
+                            continue;
+                        }
+                        // Check if the Weapons are proper
+                        try
+                        {
+                            Weapon test = new Weapon(weapon, null);
+                        }
+                        catch (ArgumentNullException)
+                        {
+                            Logger.instance.log(LogType.ERROR, "Weapon " + kvp.Key + ":" + (String)weaponListing + " did not load because of missing tags");
+                            incompleteLoad = true;
+                            badWeapons.Add(weaponListing);
+                            continue;
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.instance.log(LogType.ERROR, "Weapon " + kvp.Key + ":" + (String)weaponListing + " did not load because of an unknown error " + e.Message);
                             incompleteLoad = true;
                             badWeapons.Add(weaponListing);
                             continue;

@@ -1,5 +1,6 @@
 {
-  "Name": "Terminator",
+  "Name": "Devastator",
+  "Points": 13,
   "WeaponSkill": {
     "Type": "FixedStat",
     "Value": 3

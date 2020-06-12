@@ -1,5 +1,6 @@
-{
+﻿{
   "Name": "Terminator",
+  "Points": 26,
   "WeaponSkill": {
     "Type": "FixedStat",
     "Value": 3
