@@ -73,11 +73,15 @@ namespace wh40ksimconsole.Simulation
         /// <summary>
         /// The weapons that are available to this Model
         /// </summary>
-        List<String> weaponLoadout;
+        public List<String> weaponLoadout;
         /// <summary>
         /// The Equipment that is available to this Model
         /// </summary>
-        List<String> wargearLoadout;
+        public List<String> wargearLoadout;
+        /// <summary>
+        /// An Index of the abilities the model has
+        /// </summary>
+        public List<String> abilityList;
 
         /// <summary>
         /// All the modifiers currently applied to the model
@@ -117,7 +121,8 @@ namespace wh40ksimconsole.Simulation
         /// <param name="invulnerableSave">The Model's invulnerable save</param>
         /// <param name="weaponLoadout">The weapons that are available to this Model</param>
         /// <param name="wargearLoadout">The Equipment that is available to this Model</param>
-        public Model(String name, int points, IStat weaponSkill, IStat ballisticSkill, IStat strength, IStat toughness, IStat wounds, IStat attacks, IStat leadership, IStat armourSave, IStat invulnerableSave, List<String> weaponLoadout, List<String> wargearLoadout)
+        /// <param name="abilityList">List of abilities this model can have</param>
+        public Model(String name, int points, IStat weaponSkill, IStat ballisticSkill, IStat strength, IStat toughness, IStat wounds, IStat attacks, IStat leadership, IStat armourSave, IStat invulnerableSave, List<String> weaponLoadout, List<String> wargearLoadout, List<String> abilityList)
         {
             this.name = name;
             this.basePoints = points;
@@ -132,6 +137,7 @@ namespace wh40ksimconsole.Simulation
             this.invulnerableSave = invulnerableSave;
             this.weaponLoadout = weaponLoadout;
             this.wargearLoadout = wargearLoadout;
+            this.abilityList = abilityList;
             equippedWeapons = new List<Weapon>();
             equippedWargear = new List<Wargear>();
             modifiers = new List<Modifier>();
@@ -167,6 +173,18 @@ namespace wh40ksimconsole.Simulation
                 JValue wval = (JValue)w;
                 weaponLoadout.Add((String)wval);
             }
+            JArray wargearArray = (JArray)obj["Wargear"];
+            foreach (JToken w in wargearArray)
+            {
+                JValue wval = (JValue)w;
+                wargearLoadout.Add((String)wval);
+            }
+            JArray abilityArray = (JArray)obj["Abilities"];
+            foreach (JToken a in abilityArray)
+            {
+                JValue aval = (JValue)a;
+                abilityList.Add((String)aval);
+            }
         }
 
         /// <summary>
@@ -184,7 +202,8 @@ namespace wh40ksimconsole.Simulation
         /// <param name="invulnerableSave">The Model's invulnerable save</param>
         /// <param name="weaponLoadout">The weapons that are available to this Model</param>
         /// <param name="equipmentLoadout">The Equipment that is available to this Model</param>
-        public void assignStats(int points, IStat weaponSkill, IStat ballisticSkill, IStat strength, IStat toughness, IStat wounds, IStat attacks, IStat leadership, IStat armourSave, IStat invulnerableSave, List<String> weaponLoadout, List<String> equipmentLoadout)
+        /// <param name="abilityList">List of abilities this model can have</param>
+        public void assignStats(int points, IStat weaponSkill, IStat ballisticSkill, IStat strength, IStat toughness, IStat wounds, IStat attacks, IStat leadership, IStat armourSave, IStat invulnerableSave, List<String> weaponLoadout, List<String> equipmentLoadout, List<String> abilityList)
         {
             this.basePoints = points;
             this.weaponSkill = weaponSkill;
@@ -198,6 +217,7 @@ namespace wh40ksimconsole.Simulation
             this.invulnerableSave = invulnerableSave;
             this.weaponLoadout = weaponLoadout;
             this.wargearLoadout = equipmentLoadout;
+            this.abilityList = abilityList;
         }
 
         /// <summary>
@@ -241,7 +261,7 @@ namespace wh40ksimconsole.Simulation
             }
             foreach (Wargear w in wargear)
             {
-                // Check if the weapon exists
+                // Check if the wargear exists
                 if (w == null)
                 {
                     Logger.instance.log(LogType.WARNING, "Some of the wargear you tried to add was null");
@@ -282,10 +302,20 @@ namespace wh40ksimconsole.Simulation
             // Check if the list exists
             if (ability == null || ability.Length == 0)
             {
-                Logger.instance.log(LogType.WARNING, "You are trying to add modifiers that dont exist");
+                Logger.instance.log(LogType.WARNING, "You are trying to add abilities that dont exist");
                 return;
             }
-            abilities.AddRange(ability);
+            foreach (Ability a in ability)
+            {
+                // Check if the wargear exists
+                if (a == null)
+                {
+                    Logger.instance.log(LogType.WARNING, "Some of the abilities you tried to add were null");
+                    continue;
+                }
+                abilities.Add(a);
+                addModifier(a.modifiers.ToArray());
+            }
         }
 
         /// <summary>
@@ -303,6 +333,32 @@ namespace wh40ksimconsole.Simulation
             // Add gear points
             // Add optional points
             return total;
+        }
+
+        /// <summary>
+        /// Processes any things that may happen at the end of a round
+        /// </summary>
+        public void doRound()
+        {
+            foreach (Modifier m in modifiers)
+            {
+                // If the modifier is temporary and now out of turns, remove it
+                if (m is ModifierTemporary && (--((ModifierTemporary)m).turnsLeft) == 0)
+                {
+                    modifiers.Remove(m);
+                }
+            }
+            foreach (Ability a in abilities)
+            {
+                if (a is AbilityTemporary && (--((AbilityTemporary)a).turnsLeft) == 0)
+                {
+                    abilities.Remove(a);
+                    foreach (Modifier m in a.modifiers)
+                    {
+                        modifiers.Remove(m);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -440,7 +496,7 @@ namespace wh40ksimconsole.Simulation
         public Model copy()
         {
             Model m = new Model(name);
-            m.assignStats(basePoints, weaponSkill.copy(m), ballisticSkill.copy(m), strength.copy(m), toughness.copy(m), wounds.copy(m), attacks.copy(m), leadership.copy(m), armourSave.copy(m), invulnerableSave.copy(m), new List<string>(weaponLoadout), new List<string>(wargearLoadout));           
+            m.assignStats(basePoints, weaponSkill.copy(m), ballisticSkill.copy(m), strength.copy(m), toughness.copy(m), wounds.copy(m), attacks.copy(m), leadership.copy(m), armourSave.copy(m), invulnerableSave.copy(m), new List<string>(weaponLoadout), new List<string>(wargearLoadout), new List<string>(abilityList));           
 
             foreach (Weapon w in equippedWeapons)
             {
@@ -450,6 +506,11 @@ namespace wh40ksimconsole.Simulation
             foreach (Wargear w in equippedWargear)
             {
                 m.addWargear(w);
+            }
+
+            foreach(Ability a in abilities)
+            {
+                m.addAbility(a);
             }
 
             return m;
@@ -485,6 +546,16 @@ namespace wh40ksimconsole.Simulation
                     new JArray(
                         from w in weaponLoadout
                         select new JValue(w)
+                    )),
+                new JProperty("Wargear",
+                    new JArray(
+                        from w in wargearLoadout
+                        select new JValue(w)
+                    )),
+                new JProperty("Abilities",
+                    new JArray(
+                        from a in abilityList
+                        select new JValue(a)
                     ))
                 );
             return obj;

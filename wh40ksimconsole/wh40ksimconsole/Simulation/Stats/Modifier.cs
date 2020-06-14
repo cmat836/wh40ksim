@@ -28,7 +28,7 @@ namespace wh40ksimconsole.Simulation.Stats
         /// <summary>
         /// What conditions are required for this modifier to apply
         /// </summary>
-        public ModifierCondition[] conditions;
+        public List<ModifierCondition> conditions;
 
         /// <summary>
         /// Constructor
@@ -42,7 +42,20 @@ namespace wh40ksimconsole.Simulation.Stats
             this.value = value;
             this.method = method;
             this.target = target;
-            this.conditions = condition;
+            this.conditions = new List<ModifierCondition>(condition);
+        }
+
+        public Modifier(JObject obj)
+        {
+            this.value = (int)obj["Value"];
+            this.method = (ModifierMethod)(int)obj["Method"];
+            this.target = (ModifierTarget)(int)obj["Target"];
+            JArray conditionArray = (JArray)obj["Conditions"];
+            foreach (JToken c in conditionArray)
+            {
+                JValue cval = (JValue)c;
+                conditions.Add((ModifierCondition)(int)cval);
+            }
         }
 
         public JObject serialize()

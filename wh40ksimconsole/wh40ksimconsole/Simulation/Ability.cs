@@ -57,6 +57,22 @@ namespace wh40ksimconsole.Simulation
             modifiers = new List<Modifier>();
         }
 
+        public Ability(JObject obj)
+        {
+            this.name = (String)obj["Name"];
+            this.type = (AbilityType)(int)obj["Type"];
+            this.value = (int)obj["Value"];
+            this.aura = (bool)obj["Value"];
+            this.auraRange = (int)obj["AuraRange"];
+            JArray modifierArray = (JArray)obj["Modifiers"];
+            modifiers = new List<Modifier>();
+            foreach (JToken m in modifierArray)
+            {
+                JObject mobj = (JObject)m;
+                modifiers.Add(new Modifier(mobj));
+            }
+        }
+
         /// <summary>
         /// Adds one or more modifiers to this ability
         /// </summary>

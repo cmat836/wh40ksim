@@ -61,15 +61,18 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Simulation\Ability.cs" />
+    <Compile Include="Simulation\AbilityTemporary.cs" />
     <Compile Include="Simulation\Battle.cs" />
     <Compile Include="Simulation\BattleResult.cs" />
     <Compile Include="Simulation\Dice.cs" />
     <Compile Include="Simulation\Model.cs" />
     <Compile Include="Simulation\Player.cs" />
+    <Compile Include="Simulation\PsychicPower.cs" />
     <Compile Include="Simulation\SimulatorResult.cs" />
     <Compile Include="Simulation\Stats\FixedStat.cs" />
     <Compile Include="Simulation\Stats\ModelDepedentStat.cs" />
     <Compile Include="Simulation\Stats\Modifier.cs" />
+    <Compile Include="Simulation\Stats\ModifierTemporary.cs" />
     <Compile Include="Simulation\Stats\RollStat.cs" />
     <Compile Include="Simulation\Simulator.cs" />
     <Compile Include="Simulation\Stats\IStat.cs" />
@@ -90,20 +93,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Saves\custodes.json" />
-    <None Include="Saves\spacemarines_boltgun.json" />
-    <None Include="Saves\spacemarines_devastator.json" />
-    <None Include="Saves\spacemarines_heavybolter.json" />
-    <None Include="Saves\spacemarines_terminator.json" />
-    <None Include="Saves\tyranids_devourer.json" />
-    <None Include="Saves\tyranids_fleshborer.json" />
     <None Include="Saves\Manifest.json" />
-    <None Include="Saves\orks.json" />
-    <None Include="Saves\spacemarines.json" />
-    <None Include="Saves\spacemarines_stormbolter.json" />
-    <None Include="Saves\spacemarines_tacticalmarine.json" />
-    <None Include="Saves\tyranids_termagaunt.json" />
-    <None Include="Saves\tyranids.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="The big fix list.txt" />

@@ -32,16 +32,14 @@ namespace wh40ksimconsole
             carnifex.assignStats(67, new FixedStat(4), new FixedStat(4), new FixedStat(6), new FixedStat(7), new WoundsStat(8), new FixedStat(4), new FixedStat(6), new FixedStat(3), new FixedStat(7), 
                 new List<string> {"Bio-Plasma", "Spine banks", "Bone mace", "Monstrous acid maw", "Monstrous crushing claws", "Monstrous scything talons", "Thresher scythe",
                 "Stranglethorn cannon", "Heavy venom cannon", "Deathspitter with slimer maggots", "Devourer with brainleech worms"}, 
-                new List<string> { "Toxin sacs", "Adrenal glands", "Enhanced Sensors", "Tusks", "Chitin thorns"});
-
+                new List<string> { "Toxin sacs", "Adrenal glands", "Enhanced Sensors", "Tusks", "Chitin thorns", "Spore Cysts"},
+                new List<string> { "Living Battering Ram"});
 
             Weapon devourer = new Weapon("Devourer with brainleech worms", 7, new FixedStat(18), Weapon.WeaponType.ASSAULT, new FixedStat(6), new FixedStat(0), new FixedStat(1), new FixedStat(6));
             carnifex.addWeapon(devourer.copy(), devourer.copy(), devourer.copy(), devourer.copy());
 
             Wargear sensors = new Wargear("Enhanced Sensors", 10, false).addModifier(new Modifier(3, ModifierMethod.SET, ModifierTarget.BALLISTICSKILL));
             carnifex.addWargear(sensors);
-
-            Logger.instance.log(LogType.INFO, sensors.serialize());
 
             ModelStore store = new ModelStore("../../Saves/Manifest.json");
 

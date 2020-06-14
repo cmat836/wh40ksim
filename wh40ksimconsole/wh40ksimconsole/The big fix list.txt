@@ -29,7 +29,7 @@ Model
 
 Equipment
 
-Special Rules
+Abilities
 
 Stratagems (Global flags)
 

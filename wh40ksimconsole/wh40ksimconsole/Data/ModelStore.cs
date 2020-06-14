@@ -40,10 +40,20 @@ namespace wh40ksimconsole.Data
         /// </summary>
         Dictionary<String, JObject> modelCache;
         /// <summary>
-        /// A list of all the models loaded, indexed by their name in the form 'armyname':'modelname',
+        /// A list of all the models loaded, indexed by their name in the form 'armyname':'weaponname',
         /// i.e. tyranids:fleshborer
         /// </summary>
         Dictionary<String, JObject> weaponCache;
+        /// <summary>
+        /// A list of all the wargear lodaded, indexed by their name in the form 'armyname':'wargearname',
+        /// ie: tyranids:toxin sacs
+        /// </summary>
+        Dictionary<String, JObject> wargearCache;
+        /// <summary>
+        /// A list of all the abilities lodaded, indexed by their name in the form 'armyname':'abilityname',
+        /// ie: tyranids:shadow in the warp
+        /// </summary>
+        Dictionary<String, JObject> abilityCache;
 
         /// <summary>
         /// The name of the manifest file
@@ -102,8 +112,9 @@ namespace wh40ksimconsole.Data
         /// </summary>
         /// <param name="name">The name of the model to be generated</param>
         /// <param name="weapons">The name(s) of the weapons to be generated for this model</param>
+        /// <param name="wargear">The name(s) of the wargear to be generated for this model</param>
         /// <returns></returns>
-        public Model getModel(String name, params String[] weapons)
+        public Model getModel(String name, String[] weapons, String[] wargear)
         {
             if (!loaded)
             {
@@ -128,6 +139,18 @@ namespace wh40ksimconsole.Data
 
             Model m = new Model(modelTemplate);
 
+            // Add all the units abilities
+            foreach (String s in m.abilityList)
+            {
+                Ability a = getAbility(s);
+                if (a == null)
+                {
+                    Logger.instance.log(LogType.ERROR, "Model loading issue, Ability not obtained, " + a);
+                    continue;
+                }
+                m.addAbility(a);
+            }
+
             // Only add the weapons if the weapons array exists
             if (!(weapons == null) && !(weapons.Length == 0))
             {
@@ -136,10 +159,36 @@ namespace wh40ksimconsole.Data
                     Weapon w = getWeapon(s, m);
                     if (w == null)
                     {
-                        Logger.instance.log(LogType.ERROR, "Model loading failed, no Weapon obtained, " + s);
-                        return null;
+                        Logger.instance.log(LogType.ERROR, "Model loading issue, Weapon not obtained, " + s);
+                        continue;
                     }
                     m.addWeapon(w);
+                }
+            }
+
+            // Only add wargear if the wargear array exists
+            if (!(wargear == null) && !(wargear.Length == 0))
+            {
+                foreach (String s in wargear)
+                {
+                    Wargear w = getWargear(s);
+                    if (w == null)
+                    {
+                        Logger.instance.log(LogType.ERROR, "Model loading issue, Wargear not obtained, " + s);
+                        continue;
+                    }
+                    m.addWargear(w);
+                    // If the wargear has a linked ability, add it
+                    if (w.linkedAbility)
+                    {
+                        Ability a = getAbility(s);
+                        if (a == null)
+                        {
+                            Logger.instance.log(LogType.ERROR, "Model loading issue, Ability not obtained, " + a);
+                            continue;
+                        }
+                        m.addAbility(a);
+                    }
                 }
             }
             return m;
@@ -179,6 +228,66 @@ namespace wh40ksimconsole.Data
                 return null;
             }
             return new Weapon(weaponTemplate, parent);
+        }
+
+        /// <summary>
+        /// Generates a new Wargear as specified by its definition in the modelstore
+        /// </summary>
+        /// <param name="name">The name of the wargear to be generated</param>
+        /// <returns></returns>
+        public Wargear getWargear(String name)
+        {
+            if (!loaded)
+            {
+                Logger.instance.log(LogType.ERROR, "Modelstore not loaded");
+                return null;
+            }
+            JObject wargearTemplate = null;
+            try
+            {
+                wargearTemplate = wargearCache[name];
+            }
+            catch (KeyNotFoundException)
+            {
+                Logger.instance.log(LogType.ERROR, "No Wargear found with the name " + name);
+                return null;
+            }
+            if (wargearTemplate == null)
+            {
+                Logger.instance.log(LogType.ERROR, "No Wargear found with the name " + name);
+                return null;
+            }
+            return new Wargear(wargearTemplate);
+        }
+
+        /// <summary>
+        /// Generates a new Ability as specified by its definition in the modelstore
+        /// </summary>
+        /// <param name="name">The name of the ability to be generated</param>
+        /// <returns></returns>
+        public Ability getAbility(String name)
+        {
+            if (!loaded)
+            {
+                Logger.instance.log(LogType.ERROR, "Modelstore not loaded");
+                return null;
+            }
+            JObject abilityTemplate = null;
+            try
+            {
+                abilityTemplate = wargearCache[name];
+            }
+            catch (KeyNotFoundException)
+            {
+                Logger.instance.log(LogType.ERROR, "No Ability found with the name " + name);
+                return null;
+            }
+            if (abilityTemplate == null)
+            {
+                Logger.instance.log(LogType.ERROR, "No Ability found with the name " + name);
+                return null;
+            }
+            return new Ability(abilityTemplate);
         }
 
         /// <summary>
@@ -224,6 +333,8 @@ namespace wh40ksimconsole.Data
                 armyCache = new Dictionary<string, JObject>();
                 modelCache = new Dictionary<string, JObject>();
                 weaponCache = new Dictionary<string, JObject>();
+                abilityCache = new Dictionary<string, JObject>();
+                wargearCache = new Dictionary<string, JObject>();
 
                 List<JValue> badArmies = new List<JValue>();
 
@@ -271,12 +382,16 @@ namespace wh40ksimconsole.Data
 
                     List<JValue> badModels = new List<JValue>();
                     List<JValue> badWeapons = new List<JValue>();
+                    List<JObject> badWargear = new List<JObject>();
+                    List<JObject> badAbilities = new List<JObject>();
 
                     JArray models = new JArray();
                     JArray weapons = new JArray();
+                    JArray wargear = new JArray();
+                    JArray abilities = new JArray();
 
                     // Only load data if the army has it
-                    if (army["Models"].HasValues)
+                    if (army.ContainsKey("Models") && army["Models"].HasValues)
                     {
                         models = (JArray)army["Models"];
                     }
@@ -284,13 +399,29 @@ namespace wh40ksimconsole.Data
                     {
                         Logger.instance.log(LogType.WARNING, "Army " + kvp.Key + " has no models");
                     }
-                    if (army["Weapons"].HasValues)
+                    if (army.ContainsKey("Weapons") && army["Weapons"].HasValues)
                     {
                         weapons = (JArray)army["Weapons"];
                     }
                     else
                     {
                         Logger.instance.log(LogType.WARNING, "Army " + kvp.Key + " has no weapons");
+                    }
+                    if(army.ContainsKey("Wargear") && army["Wargear"].HasValues)
+                    {
+                        wargear = (JArray)army["Wargear"];
+                    }
+                    else
+                    {
+                        Logger.instance.log(LogType.WARNING, "Army " + kvp.Key + " has no wargear");
+                    }
+                    if (army.ContainsKey("Abilities") && army["Abilities"].HasValues)
+                    {
+                        wargear = (JArray)army["Abilities"];
+                    }
+                    else
+                    {
+                        Logger.instance.log(LogType.WARNING, "Army " + kvp.Key + " has no abilities");
                     }
 
                     // Load Models into the cache (after checking they exist)
@@ -375,6 +506,86 @@ namespace wh40ksimconsole.Data
                         weaponCache.Add(kvp.Key + ":" + (String)weaponListing, weapon);
                     }
 
+                    //Load Wargear into the cache (after checking it exists)
+                    foreach (JObject wargearListing in wargear)
+                    {
+                        if (wargearListing == null)
+                        {
+                            Logger.instance.log(LogType.ERROR, "Wargear listing in army " + kvp.Key + " failed to load, likely due to a bad location");
+                            incompleteLoad = true;
+                            badWargear.Add(wargearListing);
+                            continue;
+                        }
+                        // Check if the Models are proper
+                        try
+                        {
+                            Wargear test = new Wargear(wargearListing);
+                        }
+                        catch (ArgumentNullException)
+                        {
+                            Logger.instance.log(LogType.ERROR, "Wargear from " + kvp.Key + " did not load because of missing tags");
+                            incompleteLoad = true;
+                            badWargear.Add(wargearListing);
+                            continue;
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.instance.log(LogType.ERROR, "Wargear from" + kvp.Key + " did not load because of an unknown error " + e.Message);
+                            incompleteLoad = true;
+                            badWargear.Add(wargearListing);
+                            continue;
+                        }
+                        // Also check for duplicates, we dont like those
+                        if (wargearCache.ContainsKey(kvp.Key + ":" + (String)wargearListing["Name"]))
+                        {
+                            Logger.instance.log(LogType.ERROR, "Wargear " + kvp.Key + ":" + (String)wargearListing["Name"] + " already exists in the cache");
+                            incompleteLoad = true;
+                            badWargear.Add(wargearListing);
+                            continue;
+                        }                       
+                        wargearCache.Add(kvp.Key + ":" + (String)wargearListing["Name"], wargearListing);
+                    }
+
+                    // Load Abilities into the cache (after checking they exist)
+                    foreach (JObject abilityListing in abilities)
+                    {
+                        if (abilityListing == null)
+                        {
+                            Logger.instance.log(LogType.ERROR, "ability listing in army " + kvp.Key + " failed to load, likely due to a bad location");
+                            incompleteLoad = true;
+                            badAbilities.Add(abilityListing);
+                            continue;
+                        }
+                        // Check if the Models are proper
+                        try
+                        {
+                            Ability test = new Ability(abilityListing);
+                        }
+                        catch (ArgumentNullException)
+                        {
+                            Logger.instance.log(LogType.ERROR, "ability from " + kvp.Key + " did not load because of missing tags");
+                            incompleteLoad = true;
+                            badAbilities.Add(abilityListing);
+                            continue;
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.instance.log(LogType.ERROR, "ability from" + kvp.Key + " did not load because of an unknown error " + e.Message);
+                            incompleteLoad = true;
+                            badAbilities.Add(abilityListing);
+                            continue;
+                        }
+                        // Also check for duplicates, we dont like those
+                        if (abilityCache.ContainsKey(kvp.Key + ":" + (String)abilityListing["Name"]))
+                        {
+                            Logger.instance.log(LogType.ERROR, "ability " + kvp.Key + ":" + (String)abilityListing["Name"] + " already exists in the cache");
+                            incompleteLoad = true;
+                            badAbilities.Add(abilityListing);
+                            continue;
+                        }
+                        abilityCache.Add(kvp.Key + ":" + (String)abilityListing["Name"], abilityListing);
+                    }
+
                     // Remove the bad data from the army =
                     foreach (JValue badModel in badModels)
                     {
@@ -384,6 +595,16 @@ namespace wh40ksimconsole.Data
                     foreach (JValue badWeapon in badWeapons)
                     {
                         ((JArray)army["Weapons"]).Remove(badWeapon);
+                    }
+
+                    foreach (JObject badWgear in badWargear)
+                    {
+                        ((JArray)army["Wargear"]).Remove(badWgear);
+                    }
+
+                    foreach (JObject badAbility in badAbilities)
+                    {
+                        ((JArray)army["Abilities"]).Remove(badAbility);
                     }
                 }
 
@@ -402,7 +623,6 @@ namespace wh40ksimconsole.Data
         /// </summary>
         /// <param name="armyName">Name of the army for the model to be added to</param>
         /// <param name="modelName">The name of the model</param>
-        /// <param name="fileLocation">Where the models data is to be saved</param>
         /// <param name="model">The model to create a listing for</param>
         public void addModel(String armyName, String modelName, Model model)
         {
@@ -434,11 +654,10 @@ namespace wh40ksimconsole.Data
         }
 
         /// <summary>
-        /// Creates a new weapon listing based on the model sent to it and adds it to the required manifests
+        /// Creates a new weapon listing based on the weapon sent to it and adds it to the required manifests
         /// </summary>
-        /// <param name="armyName">Name of the army for the model to be added to</param>
+        /// <param name="armyName">Name of the army for the weapon to be added to</param>
         /// <param name="weaponName">Name of the weapon</param>
-        /// <param name="fileLocation">Where the weapons data is to be saved</param>
         /// <param name="weapon">The weapon to create a listing for</param>
         public void addWeapon(String armyName, String weaponName, Weapon weapon)
         {
@@ -467,11 +686,69 @@ namespace wh40ksimconsole.Data
             ((JArray)(armyCache[armyName]["Weapons"])).Add(new JValue(weaponName));
             weaponCache.Add(fullName, weapon.serialize());
         }
+
+        /// <summary>
+        /// Creates a new wargear listing based on the wargear sent to it and adds it to the required manifests
+        /// </summary>
+        /// <param name="armyName"></param>
+        /// <param name="wargearName"></param>
+        /// <param name="wargear"></param>
+        public void addWargear(String armyName, String wargearName, Wargear wargear)
+        {
+            if (!loaded)
+            {
+                Logger.instance.log(LogType.ERROR, "Modelstore not loaded");
+                return;
+            }
+            if (!armyCache.ContainsKey(armyName))
+            {
+                Logger.instance.log(LogType.ERROR, "Army " + armyName + " not found in loaded armies, Wargear " + wargearName + " failed to generate");
+                return;
+            }
+            String fullName = armyName + ":" + wargearName;
+            // Check to see if theres already another entry with the same name
+            if (wargearCache.ContainsKey(fullName))
+            {
+                Logger.instance.log(LogType.ERROR, "Wargear " + fullName + " already exists");
+                return;
+            }
+            ((JArray)(armyCache[armyName]["Wargear"])).Add(wargear.serialize());
+            wargearCache.Add(fullName, wargear.serialize());
+        }
+
+        /// <summary>
+        /// Creates a new ability listing based on the ability sent to it and adds it to the required manifests
+        /// </summary>
+        /// <param name="armyName"></param>
+        /// <param name="abilityName"></param>
+        /// <param name="ability"></param>
+        public void addAbility(String armyName, String abilityName, Ability ability)
+        {
+            if (!loaded)
+            {
+                Logger.instance.log(LogType.ERROR, "Modelstore not loaded");
+                return;
+            }
+            if (!armyCache.ContainsKey(armyName))
+            {
+                Logger.instance.log(LogType.ERROR, "Army " + armyName + " not found in loaded armies, Ability " + abilityName + " failed to generate");
+                return;
+            }
+            String fullName = armyName + ":" + abilityName;
+            // Check to see if theres already another entry with the same name
+            if (abilityCache.ContainsKey(fullName))
+            {
+                Logger.instance.log(LogType.ERROR, "Ability " + fullName + " already exists");
+                return;
+            }
+            ((JArray)(armyCache[armyName]["Abilities"])).Add(ability.serialize());
+            abilityCache.Add(fullName, ability.serialize());
+        }
+
         /// <summary>
         /// Creates a new army listing with the name given and adds it to the manifest and caches
         /// </summary>
         /// <param name="armyName">The name of the army</param>
-        /// <param name="fileLocation">Where it is going to saved</param>
         public void addArmy(String armyName)
         {
             if (!loaded)
@@ -488,7 +765,9 @@ namespace wh40ksimconsole.Data
             JObject army = new JObject(
                 new JProperty("Name", armyName),
                 new JProperty("Models", new JArray()),
-                new JProperty("Weapons", new JArray()));
+                new JProperty("Weapons", new JArray()),
+                new JProperty("Wargear", new JArray()),
+                new JProperty("Abilities", new JArray()));
             if (!DataReader.writeJObjectToFile(getFileName(armyName), army))
             {
                 Logger.instance.log(LogType.ERROR, "Army " + armyName + " failed to save");
